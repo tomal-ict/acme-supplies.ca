@@ -174,3 +174,27 @@ export async function customerAbandonCart(payload) {
     return { success: false };
   }
 }
+
+export async function reportSecurity404(path) {
+  try {
+    const res = await fetch(`${API_BASE}/security/report-404`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ path }),
+    });
+    return await res.json();
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function checkSecurityStatus() {
+  try {
+    const res = await fetch(`${API_BASE}/security/check-status`, {
+      headers: { Accept: "application/json" },
+    });
+    return await res.json();
+  } catch {
+    return { success: false, is_blocked: false };
+  }
+}

@@ -302,3 +302,29 @@ export async function adminUpdateSeo(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+// Security & IP Firewall
+export async function adminGetBlockedIps(params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  return adminRequest(`/admin/security/blocked-ips${qs ? `?${qs}` : ""}`);
+}
+
+export async function adminUnblockIp(ip_address) {
+  return adminRequest("/admin/security/unblock-ip", {
+    method: "POST",
+    body: JSON.stringify({ ip_address }),
+  });
+}
+
+export async function adminBlockIp(ip_address, reason = "") {
+  return adminRequest("/admin/security/block-ip", {
+    method: "POST",
+    body: JSON.stringify({ ip_address, reason }),
+  });
+}
+
+export async function adminDeleteBlockedIp(id) {
+  return adminRequest(`/admin/security/blocked-ips/${id}`, {
+    method: "DELETE",
+  });
+}

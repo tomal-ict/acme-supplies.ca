@@ -11,18 +11,23 @@ use App\Http\Controllers\Api\AdminSettingsController;
 use App\Http\Controllers\Api\AdminUserController;
 use App\Http\Controllers\Api\AdminWebsiteController;
 use App\Http\Controllers\Api\CustomerOrderController;
+use App\Http\Controllers\Api\SecurityController;
 use App\Http\Controllers\Api\StorefrontController;
 use App\Http\Middleware\AdminAuthenticate;
+use App\Http\Middleware\CheckBlockedIp;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\VerifyEncryptedApi;
 use Illuminate\Support\Facades\Route;
 
-// Public SEO files
+// Public SEO & Direct 404 Security Fallback
 Route::get('/sitemap.xml', [AdminSeoController::class, 'generateSitemap']);
 Route::get('/robots.txt', [AdminSeoController::class, 'getRobotsTxt']);
+Route::any('/security/fallback', [SecurityController::class, 'serverFallback']);
+Route::post('/security/report-404', [SecurityController::class, 'report404']);
+Route::get('/security/check-status', [SecurityController::class, 'checkStatus']);
 
-// Public Storefront (Encrypted API + Signature)
-Route::middleware([SecurityHeaders::class, VerifyEncryptedApi::class, 'throttle:120,1'])->group(function () {
+// Public Storefront (Encrypted API + Signature + Blocked IP Firewall)
+Route::middleware([SecurityHeaders::class, CheckBlockedIp::class, VerifyEncryptedApi::class, 'throttle:120,1'])->group(function () {
     Route::get('/products', [StorefrontController::class, 'products']);
     Route::get('/company-profile', [StorefrontController::class, 'companyProfile']);
     Route::get('/settings', [StorefrontController::class, 'publicSettings']);
@@ -30,13 +35,13 @@ Route::middleware([SecurityHeaders::class, VerifyEncryptedApi::class, 'throttle:
 });
 
 // Customer Accounts & Order Checkout (Public / Guest & Authenticated)
-Route::middleware([SecurityHeaders::class, 'throttle:60,1'])->prefix('customer')->group(function () {
+Route::middleware([SecurityHeaders::class, CheckBlockedIp::class, 'throttle:60,1'])->prefix('customer')->group(function () {
     Route::post('/register', [CustomerOrderController::class, 'register']);
     Route::post('/login', [CustomerOrderController::class, 'login']);
     Route::get('/orders', [CustomerOrderController::class, 'customerOrders']);
 });
 
-Route::middleware([SecurityHeaders::class, 'throttle:60,1'])->prefix('orders')->group(function () {
+Route::middleware([SecurityHeaders::class, CheckBlockedIp::class, 'throttle:60,1'])->prefix('orders')->group(function () {
     Route::post('/checkout', [CustomerOrderController::class, 'checkout']);
     Route::post('/abandon', [CustomerOrderController::class, 'trackIncomplete']);
 });
@@ -101,4 +106,12 @@ Route::middleware([SecurityHeaders::class, AdminAuthenticate::class, 'throttle:1
     // SEO Management
     Route::get('/seo', [AdminSeoController::class, 'getSeoSettings']);
     Route::post('/seo', [AdminSeoController::class, 'updateSeoSettings']);
+
+    // IP Firewall & Security Management
+    Route::get('/security/blocked-ips', [SecurityController::class, 'adminList']);
+    Route::post('/security/unblock-ip', [SecurityController::class, 'adminUnblock']);
+    Route::post('/security/block-ip', [SecurityController::class, 'adminBlock']);
+    Route::delete('/security/blocked-ips/{id}', [SecurityController::class, 'adminDestroy']);
 });
+
+Route::fallback([SecurityController::class, 'serverFallback']);

@@ -1,7 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\SecurityController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::fallback([SecurityController::class, 'serverFallback']);

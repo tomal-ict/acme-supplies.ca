@@ -8,6 +8,7 @@ import AdminLayout from "./AdminLayout";
 import AdminLoginPage from "./AdminLoginPage";
 import AdminOrdersPage from "./AdminOrdersPage";
 import AdminProductsPage from "./AdminProductsPage";
+import AdminSecurityPage from "./AdminSecurityPage";
 import AdminWebsiteSetupPage from "./AdminWebsiteSetupPage";
 
 export default function AdminApp() {
@@ -72,6 +73,7 @@ export default function AdminApp() {
         )}
         {activePage === "website_setup" && <AdminWebsiteSetupPage onToast={showToast} />}
         {activePage === "settings" && <AdminGeneralSettingsPage onToast={showToast} />}
+        {activePage === "security" && <AdminSecurityPage onToast={showToast} />}
       </AdminLayout>
 
       {/* Floating Toast Alerts */}

@@ -8,6 +8,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductsPage from "./pages/ProductsPage";
 import PromotionPage from "./pages/PromotionPage";
 import RatingsReviewsPage from "./pages/RatingsReviewsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   const [modalState, setModalState] = useState({ open: false, mode: "rfq", product: "" });
@@ -43,6 +44,7 @@ export default function App() {
                 <Route path="/company-profile" element={<CompanyProfilePage />} />
                 <Route path="/company-profile/feedback" element={<RatingsReviewsPage onOpenModal={handleOpenModal} />} />
                 <Route path="/promotion" element={<PromotionPage onOpenModal={handleOpenModal} />} />
+                <Route path="*" element={<NotFoundPage onOpenModal={handleOpenModal} />} />
               </Routes>
             </Layout>
           }

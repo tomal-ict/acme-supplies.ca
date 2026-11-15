@@ -59,6 +59,12 @@ export default function AdminLayout({ activePage, setActivePage, children, unrea
         { key: "settings", label: "General Settings", icon: "⚙️" },
       ],
     },
+    {
+      group: "Security & Firewall",
+      items: [
+        { key: "security", label: "IP Blocklist & 404 Defense", icon: "🛡️" },
+      ],
+    },
   ];
 
   const getPageTitle = () => {

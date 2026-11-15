@@ -11,4 +11,10 @@
 
     # Rewrite /robots.txt to backend api
     RewriteRule ^robots\.txt$ backend/public/api/robots.txt [L]
+
+    # Intercept non-existent files/directories and handle via Security Firewall
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^.*/(backend|assets|images)/ [NC]
+    RewriteRule ^(.*)$ backend/public/index.php/api/security/fallback?path=$1 [L,QSA]
 </IfModule>
