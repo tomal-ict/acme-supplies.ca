@@ -196,14 +196,13 @@ class SecurityController extends Controller
      */
     private function renderThemed404Html(string $path, int $attempts): string
     {
-        $safePath = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
         return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found | AMIDA OFFICE SUPPLIES</title>
+    <title>404 - Page Not Found</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -218,87 +217,53 @@ class SecurityController extends Controller
         }
         .error-card {
             background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(14px);
             border-radius: 20px;
-            max-width: 600px;
+            max-width: 480px;
             width: 100%;
-            padding: 48px 36px;
+            padding: 48px 32px;
             text-align: center;
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
         }
         .code-badge {
             display: inline-block;
-            font-size: 80px;
+            font-size: 96px;
             font-weight: 900;
             line-height: 1;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #f97316 100%);
+            letter-spacing: -4px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 45%, #f97316 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 12px;
         }
-        h1 { font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 12px; }
-        p { color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
-        .path-box {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px dashed #334155;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-family: monospace;
-            font-size: 13px;
-            color: #f97316;
-            margin-bottom: 24px;
-            word-break: break-all;
-        }
-        .warning-box {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: #fcd34d;
-            font-size: 12.5px;
-            margin-bottom: 28px;
-            text-align: left;
-            line-height: 1.5;
-        }
-        .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        h1 { font-size: 26px; font-weight: 800; color: #ffffff; margin-bottom: 24px; }
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 14.5px;
+            font-weight: 700;
             text-decoration: none;
-            transition: all 0.2s ease;
+            background: #f97316;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
         }
-        .btn-primary { background: #f97316; color: #ffffff; }
-        .btn-primary:hover { background: #ea580c; }
-        .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15); }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
     </style>
 </head>
 <body>
     <div class="error-card">
         <div class="code-badge">404</div>
-        <h1>Requested Page Not Found</h1>
-        <p>The link you attempted to access does not exist on AMIDA OFFICE SUPPLIES LIMITED.</p>
-        
-        <div class="path-box">Route: /{$safePath}</div>
-
-        <div class="warning-box">
-            🛡️ <strong>Security Notice:</strong> Automated probe and scan attempts are monitored. Multiple invalid URL requests will trigger an automatic IP firewall block.
-        </div>
-
-        <div class="btn-group">
-            <a href="./#/" class="btn btn-primary">Return to Storefront &rarr;</a>
-            <a href="./#/products" class="btn btn-secondary">Explore Products</a>
+        <h1>Page Not Found</h1>
+        <div>
+            <a href="./#/" class="btn">Back to Home &rarr;</a>
         </div>
     </div>
 </body>
 </html>
+HTML;
+    }
 HTML;
     }
 }
