@@ -1,0 +1,1342 @@
+[
+    {
+        "id": 1,
+        "sku": "P001",
+        "title": "Amida Patent Gear Toner Cartridge TN770 Compatible for Brother Printer",
+        "category": "Patent Gear Products",
+        "sub_category": "for Brother",
+        "compatible_printers": "Brother HL-L2350DW, HL-L2370DW, HL-L2370DWXL, HL-L2390DW, HL-L2395DW, DCP-L2550DW, MFC-L2710DW, MFC-L2730DW, MFC-L2750DW, MFC-L2750DWXL",
+        "price_min": 3.83,
+        "price_max": 4.99,
+        "moq": "20 Pieces",
+        "sold": "4,280+ sold",
+        "tags": [
+            "Certified",
+            "Main Product"
+        ],
+        "image": "./images/products/P001.png",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 2,
+        "sku": "P002",
+        "title": "Amida Patent Gear Toner Cartridge CF217A Compatible for HP Pro M130fn M102w",
+        "category": "Patent Gear Products",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M102a, M102w, LaserJet Pro MFP M130a, M130fn, M130fw, M130nw",
+        "price_min": 2.64,
+        "price_max": 3.69,
+        "moq": "20 Pieces",
+        "sold": "3,910+ sold",
+        "tags": [
+            "Certified",
+            "Patent"
+        ],
+        "image": "./images/products/P002.png",
+        "promo_discount": 11,
+        "is_top_pick": true
+    },
+    {
+        "id": 3,
+        "sku": "P003",
+        "title": "Amida Patent Gear Toner Cartridge CE255A Compatible for HP P3010 / 3015",
+        "category": "Patent Gear Products",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Enterprise P3010, P3015, P3015d, P3015dn, P3015x, Enterprise 500 MFP M525dn, M525f, Flow M525c, LaserJet Pro M521dn, M521dw MFP",
+        "price_min": 8.35,
+        "price_max": 9.59,
+        "moq": "20 Pieces",
+        "sold": "2,150+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P003.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 4,
+        "sku": "P004",
+        "title": "Amida Patent Gear Toner Cartridge CF400A Compatible for HP PRO M252 / M277",
+        "category": "Patent Gear Products",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet Pro M252dw, M252n, Color LaserJet Pro MFP M277dw, M277n, M277c6, M274n",
+        "price_min": 4.96,
+        "price_max": 5.75,
+        "moq": "20 Pieces",
+        "sold": "1,840+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P004.png",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 5,
+        "sku": "P005",
+        "title": "85A 78A 88A 35A 36A 12A 79A 44A 48A 83A 49A 53A Amida Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1102, P1102w, P1005, P1006, P1505, P1566, P1606dn, M1120, M1132, M1212nf, M1217nfw, M125a, M127fn, M12a, M26a, Canon LBP 6000, 6030, 6200",
+        "price_min": 1,
+        "price_max": 3.75,
+        "moq": "20 Pieces",
+        "sold": "18,500+ sold",
+        "tags": [
+            "Certified",
+            "Hot Seller"
+        ],
+        "image": "./images/products/P005.jpg",
+        "promo_discount": 12,
+        "is_top_pick": true
+    },
+    {
+        "id": 6,
+        "sku": "P006",
+        "title": "Amida Laser Toner Cartridge CF283A Compatible for HP PRO MFP M125 / 127FN / 202DW",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro MFP M125a, M125nw, M125rnw, M127fn, M127fp, M127fw, LaserJet Pro M201dw, M201n, LaserJet Pro MFP M225dn, M225dw",
+        "price_min": 3.38,
+        "price_max": 3.88,
+        "moq": "20 Pieces",
+        "sold": "14,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P006.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 7,
+        "sku": "P007",
+        "title": "CF259A CF276A CF258A CF228A CF280A Amida Toner Cartridge (59A 76A 58A 28A 80A)",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M404n, M404dn, M404dw, LaserJet Pro MFP M428dw, M428fdn, M428fdw, M402d, M402n, M402dn, M402dw, MFP M426fdn, M426fdw",
+        "price_min": 4.41,
+        "price_max": 5.13,
+        "moq": "20 Pieces",
+        "sold": "5,620+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P007.jpg",
+        "promo_discount": 10,
+        "is_top_pick": false
+    },
+    {
+        "id": 8,
+        "sku": "P008",
+        "title": "Amida Toner W1510A W1510X 151A 151X Compatible Cartridges for HP Pro 4003",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro 4003dn, 4003dw, 4003n, LaserJet Pro MFP 4103dw, 4103fdn, 4103fdw",
+        "price_min": 5.25,
+        "price_max": 8.09,
+        "moq": "500 Pieces",
+        "sold": "2,980+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P008.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 9,
+        "sku": "P009",
+        "title": "Brother Toner Cartridge TN760 TN2445 TN2450 TN2420 TN2485 Wholesale",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for Brother",
+        "compatible_printers": "Brother HL-L2350DW, HL-L2370DW, HL-L2390DW, HL-L2395DW, DCP-L2550DW, MFC-L2710DW, MFC-L2730DW, MFC-L2750DW",
+        "price_min": 2.77,
+        "price_max": 3.99,
+        "moq": "20 Pieces",
+        "sold": "6,400+ sold",
+        "tags": [
+            "Certified",
+            "Hot Seller"
+        ],
+        "image": "./images/products/P009.jpg",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 10,
+        "sku": "P010",
+        "title": "Amida TN1000 TN1035 TN660 TN450 TN2280 TN760 Compatible Toner for Brother",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for Brother",
+        "compatible_printers": "Brother HL-1110, HL-1210W, DCP-1510, MFC-1810, HL-2240, HL-2270DW, HL-L2320D, HL-L2340DW, MFC-7360N, MFC-L2700DW",
+        "price_min": 1.88,
+        "price_max": 3.21,
+        "moq": "20 Pieces",
+        "sold": "8,120+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P010.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 11,
+        "sku": "P023",
+        "title": "Amida Factory 85A 78A 88A 35A 36A 12A 79A 44A 48A 83A Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1102, P1102w, P1566, P1606dn, M1132, M1212nf, M125a, M127fn, Canon LBP 6000, 6030, 6200",
+        "price_min": 1,
+        "price_max": 3.5,
+        "moq": "20 Pieces",
+        "sold": "9,400+ sold",
+        "tags": [
+            "Factory Direct"
+        ],
+        "image": "./images/products/P023.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 12,
+        "sku": "P024",
+        "title": "Amida 85A 78A 79A 44A 48A 83A 88A 35A 36A 12A 83X 49A 53A Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1005, P1006, P1102, P1505, P1566, P1606dn, M1120, M1132, M1212nf, M1217nfw, Canon imageCLASS LBP6000, MF3010",
+        "price_min": 2.67,
+        "price_max": 4.32,
+        "moq": "20 Pieces",
+        "sold": "7,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P024.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 13,
+        "sku": "P011",
+        "title": "Amida Compatible Toner for HP 125A 126A 130A 131A 201A 203A 304A 305A 410A",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet Pro CP1025, CP1025nw, M175a, M175nw, M275, M251n, M276nw, M252dw, M277dw, M452dn, M477fdw",
+        "price_min": 2.58,
+        "price_max": 6.99,
+        "moq": "20 Pieces",
+        "sold": "6,110+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P011.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 14,
+        "sku": "P012",
+        "title": "Amida Toner 659A W2010A W2011A W2012A W2013A Compatible Cartridges for HP",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet Enterprise M776dn, M776z, Flow M776zs, Color LaserJet Enterprise M856dn, M856x",
+        "price_min": 41.39,
+        "price_max": 44.99,
+        "moq": "20 Pieces",
+        "sold": "720+ sold",
+        "tags": [
+            "Certified",
+            "Main Product"
+        ],
+        "image": "./images/products/P012.jpg",
+        "promo_discount": 11,
+        "is_top_pick": false
+    },
+    {
+        "id": 15,
+        "sku": "P013",
+        "title": "Amida Color Compatible Toner Cartridge CLT-K405S for SAMSUNG SL-C420 / 422 / 423",
+        "category": "Color Cartridges",
+        "sub_category": "for Samsung",
+        "compatible_printers": "Samsung Xpress SL-C420, SL-C422, SL-C423, SL-C470, SL-C472, SL-C473, CLP-360, CLP-365, CLX-3300, CLX-3305, CLX-3305FW",
+        "price_min": 4.28,
+        "price_max": 5.12,
+        "moq": "20 Pieces",
+        "sold": "2,150+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P013.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 16,
+        "sku": "P014",
+        "title": "Amida Toner CRG069 CRG069H Compatible Cartridges for Canon i-SENSYS LBP673 / MF750",
+        "category": "Color Cartridges",
+        "sub_category": "for Canon",
+        "compatible_printers": "Canon i-SENSYS LBP673Cdw, MF752Cdw, MF754Cdw, Color imageCLASS LBP674Cdw, MF753Cdw, MF751Cdw",
+        "price_min": 7.55,
+        "price_max": 10.79,
+        "moq": "20 Pieces",
+        "sold": "1,890+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P014.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 17,
+        "sku": "P015",
+        "title": "Amida Premium Toner Cartridge W2120A 212A Compatible for Color LJ Enterprise M554dn",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet Enterprise M554dn, M555dn, M555x, Color LaserJet Enterprise MFP M578dn, M578f, Flow M578c",
+        "price_min": 13.89,
+        "price_max": 20.59,
+        "moq": "20 Pieces",
+        "sold": "980+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P015.jpg",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 18,
+        "sku": "P016",
+        "title": "Amida Toner TN227 TN237 TN277 Compatible Color Cartridge Set for Brother",
+        "category": "Color Cartridges",
+        "sub_category": "for Brother",
+        "compatible_printers": "Brother HL-L3210CW, HL-L3230CDW, HL-L3270CDW, HL-L3290CDW, DCP-L3510CDW, DCP-L3550CDW, MFC-L3710CW, MFC-L3750CDW, MFC-L3770CDW",
+        "price_min": 3.52,
+        "price_max": 4.18,
+        "moq": "20 Pieces",
+        "sold": "3,450+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P016.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 19,
+        "sku": "P025",
+        "title": "Amida Toner New Arrival W2200A W2200X 220A 220X Without Chip",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet Pro 4201dn, 4201dw, Color LaserJet Pro MFP 4301fdn, 4301fdw",
+        "price_min": 7.7,
+        "price_max": 10.99,
+        "moq": "20 Pieces",
+        "sold": "1,230+ sold",
+        "tags": [
+            "New Arrival"
+        ],
+        "image": "./images/products/P025.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 20,
+        "sku": "P017",
+        "title": "Amida Inks 67XL / 305XL Remanufactured DeskJet OfficeJet Color Inkjet for HP",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP DeskJet 1255, 2710, 2720, 2722, 2755, 4155, DeskJet Plus 4122, Envy 6055, 6075, Envy Pro 6455",
+        "price_min": 9.38,
+        "price_max": 10.39,
+        "moq": "20 Pieces",
+        "sold": "9,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P017.png",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 21,
+        "sku": "P026",
+        "title": "Amida Inks 305XL 305 XL Remanufactured Compatible Deskjet OfficeJet for HP",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP DeskJet 2320, 2710, 2720, 2722, DeskJet Plus 4120, 4130, Envy 6020, 6030, Envy Pro 6420, 6430",
+        "price_min": 9.38,
+        "price_max": 10.38,
+        "moq": "20 Pieces",
+        "sold": "6,400+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P026.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 22,
+        "sku": "P018",
+        "title": "Amida Ink Wholesale T9741 T9742 T9743 T9744 Premium Compatible for Epson",
+        "category": "Inks & Inkjets",
+        "sub_category": "for Epson",
+        "compatible_printers": "Epson WorkForce Pro WF-C869R, WF-C869RD3TWFC, WF-C869RDTWF, WF-C869RDWF",
+        "price_min": 36.55,
+        "price_max": 47.99,
+        "moq": "20 Pieces",
+        "sold": "1,120+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P018.png",
+        "promo_discount": 10,
+        "is_top_pick": false
+    },
+    {
+        "id": 23,
+        "sku": "P027",
+        "title": "Amida Inks 63XL 63 XL Remanufactured Compatible Inkjet for HP",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP DeskJet 1112, 2130, 3630, Envy 4520, OfficeJet 3830, 4650, 5255, 5258",
+        "price_min": 7.54,
+        "price_max": 8.6,
+        "moq": "20 Pieces",
+        "sold": "4,500+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P027.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 24,
+        "sku": "P028",
+        "title": "Amida Ink Wholesale T9481 T9482 T9483 T9484 Premium Compatible for Epson",
+        "category": "Inks & Inkjets",
+        "sub_category": "for Epson",
+        "compatible_printers": "Epson WorkForce Pro WF-C878R, WF-C879R, WF-C878RD3TWFC, WF-C878RDTWFC",
+        "price_min": 4.86,
+        "price_max": 5.99,
+        "moq": "20 Pieces",
+        "sold": "3,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P028.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 25,
+        "sku": "P029",
+        "title": "Amida Inks 65XL 65 XL Remanufactured Compatible Inkjet for HP",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP DeskJet 2622, 2624, 2635, 3720, 3722, 3752, 3755, AMP 100, 120, 125, 130",
+        "price_min": 7.54,
+        "price_max": 8.69,
+        "moq": "20 Pieces",
+        "sold": "3,800+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P029.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 26,
+        "sku": "P030",
+        "title": "Amida Re-Manufactured Ink Cartridge 953 953XL for OfficeJet Pro 7740/8210/8710",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP OfficeJet Pro 7720, 7730, 7740 Wide Format, OfficeJet Pro 8210, 8216, 8710, 8715, 8720, 8725, 8730, 8740",
+        "price_min": 2.66,
+        "price_max": 3.99,
+        "moq": "20 Pieces",
+        "sold": "5,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P030.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 27,
+        "sku": "P031",
+        "title": "Amida Toner 975X 972X 913X 974X Premium Compatible Ink Cartridge for HP PageWide",
+        "category": "Inks & Inkjets",
+        "sub_category": "for HP",
+        "compatible_printers": "HP PageWide Pro 452dn, 452dw, PageWide Pro MFP 477dn, 477dw, PageWide Pro 552dw, MFP 577dw, 577z",
+        "price_min": 13.54,
+        "price_max": 16.99,
+        "moq": "20 Pieces",
+        "sold": "1,400+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P031.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 28,
+        "sku": "P019",
+        "title": "Amida Universal 1000ml Bulk Dye & Pigment Refill Ink for Epson / Canon / HP",
+        "category": "Bulk Inks",
+        "sub_category": "Bulk Ink",
+        "compatible_printers": "Universal CISS & Tank Printers: Epson EcoTank L1110/L3110/L3150/L4150/L6160, Canon MegaTank G1010/G2010/G3010/G4010, HP Smart Tank 500/515/615, Brother DCP-T310/T510W/T710W",
+        "price_min": 1.62,
+        "price_max": 2.09,
+        "moq": "20 Bottles",
+        "sold": "11,400+ sold",
+        "tags": [
+            "Best Seller"
+        ],
+        "image": "./images/products/P019.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 29,
+        "sku": "P032",
+        "title": "Amida Ink GI-190 290 390 490 590 690 790 890 990 Refill Ink for Canon G Series",
+        "category": "Bulk Inks",
+        "sub_category": "for Canon",
+        "compatible_printers": "Canon Pixma G1000, G1100, G1200, G1400, G2000, G2100, G2400, G3000, G3100, G3400, G4000, G4200, G1010, G2010, G3010, G4010 MegaTank",
+        "price_min": 0.48,
+        "price_max": 0.99,
+        "moq": "20 Bottles",
+        "sold": "8,900+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P032.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 30,
+        "sku": "P033",
+        "title": "Amida Inks 500ML Universal Ink Compatible for Canon/Epson/Brother/HP/Lexmark",
+        "category": "Bulk Inks",
+        "sub_category": "Bulk Ink",
+        "compatible_printers": "Universal 500ml Bottled Ink: Compatible with Canon Pixma/MegaTank, Epson EcoTank/WorkForce, Brother InkBenefit, HP Smart Tank & DeskJet CISS",
+        "price_min": 0.96,
+        "price_max": 1.49,
+        "moq": "20 Bottles",
+        "sold": "7,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P033.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 31,
+        "sku": "P034",
+        "title": "Amida Ink 673 EP673 T673 Refill Compatible for Epson L800/L805/L850",
+        "category": "Bulk Inks",
+        "sub_category": "for Epson",
+        "compatible_printers": "Epson EcoTank & WorkForce Sublimation Series: L130, L310, L800, L805, L850, L1300, L1800, ET-2720, ET-2750, WF-7710, WF-7720, F170, F570",
+        "price_min": 0.48,
+        "price_max": 0.99,
+        "moq": "20 Bottles",
+        "sold": "6,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P034.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 32,
+        "sku": "P035",
+        "title": "Amida Water Based Ink Color Refill Inkjet Ink BT6000 BT5000 for Brother DCP-T300",
+        "category": "Bulk Inks",
+        "sub_category": "for Brother",
+        "compatible_printers": "Epson EcoTank Maintenance Box: L4150, L4160, L6160, L6170, L6190, ET-2700, ET-2750, ET-3700, ET-3750, ET-4750, M1140, M1180, M2140, M3170",
+        "price_min": 0.78,
+        "price_max": 0.83,
+        "moq": "20 Bottles",
+        "sold": "5,400+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P035.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 33,
+        "sku": "P036",
+        "title": "Amida Compatible GT52 GT51 GT53 Ink Refills for HP Smart Tank 515/519/615",
+        "category": "Bulk Inks",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Smart Tank 500, 515, 530, 615, HP Ink Tank 115, 315, 319, 415, 419, HP DeskJet GT5810, GT5820",
+        "price_min": 0.48,
+        "price_max": 0.99,
+        "moq": "20 Bottles",
+        "sold": "9,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P036.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 34,
+        "sku": "P037",
+        "title": "Amida Ink 502 Pigment Compatible for Epson WorkForce ET4750/ET3750/ST3000",
+        "category": "Bulk Inks",
+        "sub_category": "for Epson",
+        "compatible_printers": "Epson EcoTank L1110, L3100, L3110, L3150, L3156, L3160, L5190, EcoTank ET-2710, ET-2720, ET-4700",
+        "price_min": 0.48,
+        "price_max": 0.99,
+        "moq": "20 Bottles",
+        "sold": "4,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P037.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 35,
+        "sku": "P038",
+        "title": "Amida Ink Compatible for Canon PIXMA G3963/G3960/G2960/G1920 GI-91",
+        "category": "Bulk Inks",
+        "sub_category": "for Canon",
+        "compatible_printers": "Epson 6-Color Photo Printers: EcoTank L800, L805, L810, L850, L1800 Photo Desktop & A3 Format Printers",
+        "price_min": 0.44,
+        "price_max": 0.99,
+        "moq": "20 Bottles",
+        "sold": "3,900+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P038.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 36,
+        "sku": "P039",
+        "title": "Amida Wholesale Toner Powder CE285A Compatible for HP Printer",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1005, P1006, P1102, P1102w, P1505, M1120, M1132, M1212nf, Canon LBP 6000, 6030, MF3010",
+        "price_min": 0.89,
+        "price_max": 8.89,
+        "moq": "20 Bags",
+        "sold": "7,800+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P039.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 37,
+        "sku": "P040",
+        "title": "Amida Wholesale Toner Powder Q2612A Compatible for HP Printer",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet 1010, 1012, 1015, 1018, 1020, 1022, 3015, 3020, 3030, 3050, 3052, 3055, M1005, M1319f, Canon LBP 2900, 3000",
+        "price_min": 0.9,
+        "price_max": 8.99,
+        "moq": "20 Bags",
+        "sold": "6,500+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P040.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 38,
+        "sku": "P041",
+        "title": "Amida Toner TK3060 Cartridge Compatible for Kyocera Printer Toner Powder",
+        "category": "Toner Powder",
+        "sub_category": "for Kyocera",
+        "compatible_printers": "Kyocera ECOSYS M3040dn, M3040idn, M3540dn, M3540idn, FS-2100D, FS-2100DN, FS-4100DN, FS-4200DN, FS-4300DN",
+        "price_min": 11.9,
+        "price_max": 12.99,
+        "moq": "20 Bags",
+        "sold": "1,900+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P041.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 39,
+        "sku": "P042",
+        "title": "Amida Wholesale Toner Powder SAMSUNG Universal Compatible",
+        "category": "Toner Powder",
+        "sub_category": "for Samsung",
+        "compatible_printers": "Samsung ML-1610, ML-1640, ML-2010, ML-2160, ML-2165, SCX-3200, SCX-3400, SCX-4300, SCX-4521F, Xpress M2020, M2070",
+        "price_min": 0.9,
+        "price_max": 8.99,
+        "moq": "20 Bags",
+        "sold": "4,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P042.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 40,
+        "sku": "P043",
+        "title": "Amida Wholesale Toner Powder HP Universal Compatible",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "Universal HP Monochrome Series: LaserJet 1020, P1102, P1566, P1606, P2035, P2055, Pro M402, M404, M428, Enterprise P3015, M506",
+        "price_min": 0.9,
+        "price_max": 8.91,
+        "moq": "20 Bags",
+        "sold": "12,000+ sold",
+        "tags": [
+            "Best Seller"
+        ],
+        "image": "./images/products/P043.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 41,
+        "sku": "P044",
+        "title": "Amida Cartridges CE250A Color Toner Powder Compatible",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color LaserJet CP3525, CP3525n, CP3525dn, CM3530, CM3530fs MFP, Enterprise 500 Color M551, M575 MFP",
+        "price_min": 14.26,
+        "price_max": 15.29,
+        "moq": "20 Bags",
+        "sold": "1,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P044.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 42,
+        "sku": "P045",
+        "title": "Amida Toner Powder 5500 Long Life and High-Performance",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet 5500, 5550, 4200, 4300, 4250, 4350, 9000, 9040, 9050 High-Yield Workgroup Printers",
+        "price_min": 0.9,
+        "price_max": 1.8,
+        "moq": "20 Bags",
+        "sold": "5,600+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P045.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 43,
+        "sku": "P046",
+        "title": "Amida Compatible Universal Bottle Toner 88A 278A 285A 435A 436A",
+        "category": "Toner Powder",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1005, P1102, P1505, P1566, P1606, Canon LBP 6000, 6030, 6200, 6230 Universal Refill",
+        "price_min": 0.9,
+        "price_max": 7.99,
+        "moq": "20 Bottles",
+        "sold": "8,400+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P046.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 44,
+        "sku": "P020",
+        "title": "Amida LaserJet AK-1102 A4 Black Laser Printer Office Home Laser Printer",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8.1 / 7, macOS 10.14 - 14.x, Ubuntu / Debian Linux, ChromeOS, High-Speed USB 2.0 Direct Connect",
+        "price_min": 115,
+        "price_max": 130,
+        "moq": "2 Units",
+        "sold": "2,410+ sold",
+        "tags": [
+            "Certified",
+            "Main Product"
+        ],
+        "image": "./images/products/P020.png",
+        "promo_discount": 11,
+        "is_top_pick": true
+    },
+    {
+        "id": 45,
+        "sku": "P021",
+        "title": "Amida LaserJet AK-1105NW A4 Black Laser Multi-Function Printer",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8 / 7, macOS, Linux, iOS AirPrint, Android Mopria, 10/100M Ethernet LAN & Wireless 802.11 b/g/n",
+        "price_min": 150,
+        "price_max": 175,
+        "moq": "2 Units",
+        "sold": "840+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P021.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 46,
+        "sku": "P047",
+        "title": "Amida LaserJet AK-1105 A4 Black Laser Multi Function Printer",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8 / 7, macOS, Linux, USB 2.0 Interface for Standard Office & Home Workstations",
+        "price_min": 143,
+        "price_max": 158,
+        "moq": "2 Units",
+        "sold": "620+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P047.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 47,
+        "sku": "P048",
+        "title": "Amida LaserJet AK-1102NW A4 Black Laser Printer with WiFi",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8.1 / 7, macOS, Linux, Dual-Band WiFi (2.4GHz) & USB 2.0 Mobile Printing Ready",
+        "price_min": 122,
+        "price_max": 138,
+        "moq": "2 Units",
+        "sold": "1,150+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P048.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 48,
+        "sku": "P049",
+        "title": "Amida Laser Printer AK-2361NDW Automatic Double Sided 36ppm",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows Server 2016-2022, Windows 11/10/8, macOS, Linux CUPS, Gigabit LAN, Automatic Duplex Printing",
+        "price_min": 180,
+        "price_max": 198,
+        "moq": "2 Units",
+        "sold": "490+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P049.png",
+        "promo_discount": 10,
+        "is_top_pick": false
+    },
+    {
+        "id": 49,
+        "sku": "P050",
+        "title": "Amida Laser Printer AK-2261NDW Automatic Double Sided 26ppm",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8, macOS, Linux, Automatic 2-Sided Duplex, High-Speed USB & Ethernet Connectivity",
+        "price_min": 138,
+        "price_max": 155,
+        "moq": "2 Units",
+        "sold": "530+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P050.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 50,
+        "sku": "P051",
+        "title": "Amida Laser Printer AK-2401NDW Automatic Double Sided 40ppm",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Enterprise Windows 11 / Server, macOS, Linux, Network Gigabit RJ-45, USB 2.0, Heavy-Duty 40ppm Workgroup Engine",
+        "price_min": 195,
+        "price_max": 210,
+        "moq": "2 Units",
+        "sold": "410+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P051.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 51,
+        "sku": "P052",
+        "title": "Amida Laser Printer AK-2401D Automatic Double Sided 40ppm",
+        "category": "Printers",
+        "sub_category": "Laser Printers",
+        "compatible_printers": "Supports: Windows 11 / 10 / 8 / 7, macOS, Linux, Heavy Duty Office Workstation Auto-Duplex High-Speed Printing",
+        "price_min": 188,
+        "price_max": 205,
+        "moq": "2 Units",
+        "sold": "380+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P052.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 52,
+        "sku": "P022",
+        "title": "Amida Hot Sale Chip CF259A CF276A CF258A Compatible Chips for HP",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For Toner Cartridges: HP CF259A, CF276A, CF258A. Used in: HP LaserJet Pro M404n, M404dn, M404dw, MFP M428dw, M428fdn, M428fdw",
+        "price_min": 0.76,
+        "price_max": 1.8,
+        "moq": "100 Pieces",
+        "sold": "25,000+ sold",
+        "tags": [
+            "OEM Ready"
+        ],
+        "image": "./images/products/P022.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 53,
+        "sku": "P053",
+        "title": "Amida Toner Chip 70C2HC0 Compatible for Lexmark CS310 CS410 CS510",
+        "category": "Toner Chips",
+        "sub_category": "for Lexmark",
+        "compatible_printers": "For Toner Cartridge: Lexmark 70C2HC0. Used in: Lexmark CS310n, CS310dn, CS410n, CS410dn, CS410dtn, CS510de, CS510dte",
+        "price_min": 1.45,
+        "price_max": 2.39,
+        "moq": "100 Pieces",
+        "sold": "4,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P053.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 54,
+        "sku": "P054",
+        "title": "Amida Hot Sale Chip CF259X CF276X CF258X 259X 276X 258X",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For High-Yield Cartridges: HP CF259X, CF276X, CF258X. Used in: HP LaserJet Pro M404 series, MFP M428 series",
+        "price_min": 1.39,
+        "price_max": 1.99,
+        "moq": "100 Pieces",
+        "sold": "12,000+ sold",
+        "tags": [
+            "Hot Seller"
+        ],
+        "image": "./images/products/P054.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 55,
+        "sku": "P055",
+        "title": "Amida Toner Cartridge Chip Upgrade Machine Equipment MiniSmart Device",
+        "category": "Toner Chips",
+        "sub_category": "Chip Upgrader",
+        "compatible_printers": "Universal Chip Upgrader: Rewrites firmware & reset levels for HP, Canon, Brother, Samsung, Xerox toner & drum smart chips",
+        "price_min": 65,
+        "price_max": 70,
+        "moq": "1 Unit",
+        "sold": "950+ sold",
+        "tags": [
+            "Main Product"
+        ],
+        "image": "./images/products/P055.png",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 56,
+        "sku": "P056",
+        "title": "Amida Hot Sale Chip W1510A W1510X Compatible Chips for HP",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For Toner Cartridges: HP W1510A, W1510X (151A/151X). Used in: HP LaserJet Pro 4003dn, 4003dw, MFP 4103fdn, 4103fdw",
+        "price_min": 1.25,
+        "price_max": 2.85,
+        "moq": "100 Pieces",
+        "sold": "8,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P056.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 57,
+        "sku": "P057",
+        "title": "Amida Hot Sale Chip W2030A W2030X W2031A W2032A W2033A 415A",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For Color Toner: HP W2030A - W2033A (415A). Used in: HP Color LaserJet Pro M454dn, M454dw, MFP M479dw, M479fdn, M479fdw",
+        "price_min": 0.9,
+        "price_max": 2.9,
+        "moq": "100 Pieces",
+        "sold": "7,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P057.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 58,
+        "sku": "P058",
+        "title": "Amida Hot Sale Chip W2310A W2311A W2312A W2313A Compatible Chips for HP",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For Color Toner: HP W2310A - W2313A (215A). Used in: HP Color LaserJet Pro M155a, M155nw, MFP M182n, M182nw, M183fw",
+        "price_min": 0.62,
+        "price_max": 1.52,
+        "moq": "100 Pieces",
+        "sold": "6,400+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P058.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 59,
+        "sku": "P059",
+        "title": "Amida Hot Sale Chip W2040A W2040X W2041A W2042A W2043A 416A",
+        "category": "Toner Chips",
+        "sub_category": "for HP",
+        "compatible_printers": "For Color Toner: HP W2040A - W2043A (416A). Used in: HP Color LaserJet Pro M454 series, MFP M479 series",
+        "price_min": 0.76,
+        "price_max": 1.99,
+        "moq": "100 Pieces",
+        "sold": "9,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P059.png",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 60,
+        "sku": "P060",
+        "title": "Amida MPC3503 Compatible Color Toner Cartridge for Ricoh MP C3003sp C3503sp Printer",
+        "category": "Color Cartridges",
+        "sub_category": "for Ricoh",
+        "compatible_printers": "Ricoh Aficio MP C3003, MP C3003SP, MP C3503, MP C3503SP, MP C3503ZSP Multifunction Copier System",
+        "price_min": 18,
+        "price_max": 24,
+        "moq": "20 Pieces",
+        "sold": "1,450+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P060.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 61,
+        "sku": "P061",
+        "title": "Amida Color Toner W2070A W2071A W2072A W2073A 117A Compatible for HP Color LJ Pro 150A/178",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color Laser 150a, 150nw, HP Color Laser MFP 178nw, 178nwg, 179fnw, 179fwg",
+        "price_min": 4.22,
+        "price_max": 4.99,
+        "moq": "20 Pieces",
+        "sold": "3,800+ sold",
+        "tags": [
+            "Certified",
+            "Hot Seller"
+        ],
+        "image": "./images/products/P061.jpg",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 62,
+        "sku": "P062",
+        "title": "Amida New Arrive 150A Compatible LaserJet Printer W1500A Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet M111a, M111w, LaserJet MFP M141a, M141w",
+        "price_min": 2.98,
+        "price_max": 4.44,
+        "moq": "500 Pieces",
+        "sold": "4,100+ sold",
+        "tags": [
+            "New Arrival"
+        ],
+        "image": "./images/products/P062.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 63,
+        "sku": "P063",
+        "title": "Amida Toner 116A W2060A W2061A W2062A W2063A Compatible for HP Printer Toner Cartridge",
+        "category": "Color Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Color Laser 150a, 150nw, HP Color Laser MFP 178nw, 179fnw",
+        "price_min": 4.22,
+        "price_max": 4.99,
+        "moq": "20 Pieces",
+        "sold": "2,900+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P063.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 64,
+        "sku": "P064",
+        "title": "Amida Wholesale Toner 87X 87XL Compatible Cartridges for HP Printer CF287X Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Enterprise M506n, M506dn, M506x, Enterprise MFP M527dn, M527f, LaserJet Pro M501dn, M501n",
+        "price_min": 10.99,
+        "price_max": 12.99,
+        "moq": "20 Pieces",
+        "sold": "2,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P064.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 65,
+        "sku": "P065",
+        "title": "Amida Toner W1110A 110A Compatible Cartridge for HP Printer Toner Cartridges",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Laser 108a, 108w, HP Laser MFP 136a, 136w, 136nw, 138fnw, 138p, 138pnw",
+        "price_min": 4.05,
+        "price_max": 5.39,
+        "moq": "20 Pieces",
+        "sold": "3,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P065.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 66,
+        "sku": "P066",
+        "title": "Amida Printer 80mm POS System for Retail Shop AK302 AK303 AK306 Thermal Receipt Printer",
+        "category": "Thermal Printers",
+        "sub_category": "POS Hardware",
+        "compatible_printers": "ESC/POS Compatible: Windows 11/10/8/7/XP, Android POS Devices, Linux, macOS, OPOS, Cash Drawer RJ11 Port, 80mm Receipt Printing",
+        "price_min": 30.15,
+        "price_max": 31.05,
+        "moq": "24 Pieces",
+        "sold": "2,800+ sold",
+        "tags": [
+            "Certified",
+            "Main Product"
+        ],
+        "image": "./images/products/P066.jpg",
+        "promo_discount": 11,
+        "is_top_pick": true
+    },
+    {
+        "id": 67,
+        "sku": "P067",
+        "title": "85A 78A 88A 35A 36A 12A 79A 44A 48A 83A 105A 106A 107A Compatible Laser Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro P1102, P1102w, P1566, P1606dn, M1132, M1212nf, M125a, M127fn, HP Laser 107a, 107w, MFP 135a, 135w, Canon LBP 2900, 3000, 6000",
+        "price_min": 2.99,
+        "price_max": 8.99,
+        "moq": "20 Pieces",
+        "sold": "15,400+ sold",
+        "tags": [
+            "Hot Seller"
+        ],
+        "image": "./images/products/P067.jpg",
+        "promo_discount": 10,
+        "is_top_pick": true
+    },
+    {
+        "id": 68,
+        "sku": "P068",
+        "title": "Amida 85A 78A 88A 35A 36A 12A 79A 44A 48A 83A 83X 49A 53A Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet P1005, P1006, P1102, P1102w, P1505, P1566, P1606dn, M1120, M1132, M1212nf, M125a, M127fn, Canon LBP6030, MF3010",
+        "price_min": 1,
+        "price_max": 4.85,
+        "moq": "20 Pieces",
+        "sold": "11,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P068.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 69,
+        "sku": "P069",
+        "title": "Amida Toner Cartridge W1105A 105A Compatible for Laser MFP 135a Printer",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP Laser 107a, 107w, 107r, HP Laser MFP 135a, 135w, 135r, MFP 137fnw",
+        "price_min": 4.5,
+        "price_max": 5.5,
+        "moq": "20 Pieces",
+        "sold": "4,700+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P069.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 70,
+        "sku": "P070",
+        "title": "Amida Premium Toner Compatible CF232A 32A Drum Unit for HP Printer",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M203d, M203dn, M203dw, LaserJet Pro MFP M227d, M227fdn, M227fdw, M227sdn",
+        "price_min": 2.99,
+        "price_max": 3.89,
+        "moq": "20 Pieces",
+        "sold": "5,100+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P070.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 71,
+        "sku": "P071",
+        "title": "Amida Toner CF230A New Compatible Cartridges for HP Printer 230A 230X",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M203d, M203dn, M203dw, LaserJet Pro MFP M227fdn, M227fdw, M227sdn",
+        "price_min": 1.99,
+        "price_max": 3.99,
+        "moq": "20 Pieces",
+        "sold": "6,200+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P071.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 72,
+        "sku": "P072",
+        "title": "Amida Toner CF230A 30A Compatible Cartridge for HP Printer Toner Cartridges",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M203d, M203dn, M203dw, LaserJet Pro MFP M227d, M227fdn, M227fdw, M227sdn",
+        "price_min": 1.99,
+        "price_max": 2.99,
+        "moq": "20 Pieces",
+        "sold": "7,300+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P072.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 73,
+        "sku": "P073",
+        "title": "Amida CF230A CF230X CF230XL CF230XXL Compatible for HP 30A Toner Cartridge",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M203d, M203dn, M203dw, LaserJet Pro MFP M227fdn, M227fdw, M227sdn",
+        "price_min": 1.99,
+        "price_max": 3.99,
+        "moq": "20 Pieces",
+        "sold": "5,800+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P073.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    },
+    {
+        "id": 74,
+        "sku": "P074",
+        "title": "Amida Toner CF230A CF230X CF230XL CF230XXL Compatible for HP Printer",
+        "category": "Monochrome Cartridges",
+        "sub_category": "for HP",
+        "compatible_printers": "HP LaserJet Pro M203d, M203dn, M203dw, LaserJet Pro MFP M227d, M227fdn, M227fdw",
+        "price_min": 1.99,
+        "price_max": 3.99,
+        "moq": "20 Pieces",
+        "sold": "4,900+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P074.jpg",
+        "promo_discount": 0,
+        "is_top_pick": false
+    }
+]

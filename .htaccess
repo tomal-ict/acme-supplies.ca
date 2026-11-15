@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Dynamic redirect for /myadmin or /myadmin/ to #/myadmin
+    # Works seamlessly on both local subdirectories (e.g. /1_Asystem/ACME/) and cloud root domains (e.g. https://domain.com/)
+    RewriteCond %{REQUEST_URI} ^(.*)/myadmin/?$ [NC]
+    RewriteRule ^myadmin/?$ %1/#/myadmin [R=302,L,NE]
+
+    # Rewrite /sitemap.xml to backend api
+    RewriteRule ^sitemap\.xml$ backend/public/api/sitemap.xml [L]
+
+    # Rewrite /robots.txt to backend api
+    RewriteRule ^robots\.txt$ backend/public/api/robots.txt [L]
+</IfModule>
