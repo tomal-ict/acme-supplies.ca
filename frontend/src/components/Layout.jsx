@@ -581,7 +581,7 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
                 <Link to="/products?category=Color%20Cartridges">Color Laser Cartridges</Link>
                 <Link to="/products?category=Inks%20%26%20Inkjets">Inks &amp; Inkjet Cartridges</Link>
                 <Link to="/products?category=Bulk%20Inks">1000ml / 500ml Bulk Refill Inks</Link>
-                <Link to="/products?category=Toner%20Powder%20%26%20Chips">Bulk Toner Powder &amp; Chips</Link>
+                <Link to="/products?category=Toner%20Powder">Bulk Toner Powder</Link>
                 <Link to="/products?category=Thermal%20Printers">Laser &amp; Thermal POS Printers</Link>
               </div>
             </li>

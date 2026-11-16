@@ -195,12 +195,8 @@ export default function HomePage({ onOpenModal }) {
             <div><h4>Thermal POS Printers</h4><small>AK-80250 80mm Receipt</small></div>
             <span>View &rarr;</span>
           </Link>
-          <Link to="/products?category=Toner%20Powder%20%26%20Chips" className="hotspot-card">
+          <Link to="/products?category=Toner%20Powder" className="hotspot-card">
             <div><h4>Bulk Toner Powder</h4><small>1000g Japanese Formula</small></div>
-            <span>View &rarr;</span>
-          </Link>
-          <Link to="/products?category=Toner%20Powder%20%26%20Chips" className="hotspot-card">
-            <div><h4>Smart Reset Chips</h4><small>Latest Firmware Ready</small></div>
             <span>View &rarr;</span>
           </Link>
           <Link to="/promotion" className="hotspot-card">
@@ -319,7 +315,6 @@ export default function HomePage({ onOpenModal }) {
         { cat: "Bulk Inks", banner: "./images/sec-bulk-ink.jpg", key: "bulk" },
         { cat: "Toner Powder", banner: "./images/sec-powder.jpg", key: "powder" },
         { cat: "Printers", banner: "./images/sec-printer.jpg", key: "printers" },
-        { cat: "Toner Chips", banner: "./images/sec-chip.jpg", key: "chips" },
       ].map(({ cat, banner, key }) => {
         const activeBanner = dynamicSectionBanners[cat] || dynamicSectionBanners[key] || banner;
         return (

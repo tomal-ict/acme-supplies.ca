@@ -17,7 +17,6 @@ const CATEGORIES = [
   { key: "Toner Powder", label: "Amida Toner Powder" },
   { key: "Printers", label: "Amida Printer (A4 Laser)" },
   { key: "Thermal Printers", label: "Amida Thermal Printer (POS)" },
-  { key: "Toner Chips", label: "Amida Toner Chip" },
 ];
 
 export default function ProductsPage({ onOpenModal }) {

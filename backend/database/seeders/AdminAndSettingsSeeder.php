@@ -122,10 +122,6 @@ class AdminAndSettingsSeeder extends Seeder
                 'name' => 'Amida Thermal Printer (POS)',
                 'subs' => ['Thermal POS'],
             ],
-            'Toner Chips' => [
-                'name' => 'Amida Toner Chip',
-                'subs' => ['Smart Chips', 'for HP', 'for Canon'],
-            ],
         ];
 
         $order = 1;

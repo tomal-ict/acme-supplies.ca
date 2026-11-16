@@ -95,13 +95,6 @@ const DEFAULT_SECTION_BANNERS = [
     tagline: "Compact High-Speed Desktop Receipt & Monochrome Printers",
     link: "/products?category=Thermal%20Printer",
   },
-  {
-    key: "chips",
-    name: "Toner Chips & Parts",
-    image: "./images/banner-chips.png",
-    tagline: "Smart Reset Microchips, OPC Drums & Magnetic Rollers",
-    link: "/products?category=Toner%20Chip",
-  },
 ];
 
 export default function AdminWebsiteSetupPage({ onToast }) {

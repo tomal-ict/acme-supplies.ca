@@ -200,7 +200,6 @@ class OrderAndBannerSeeder extends Seeder
             'Bulk Inks' => './images/sec-bulk-ink.jpg',
             'Toner Powder' => './images/sec-powder.jpg',
             'Printers' => './images/sec-printer.jpg',
-            'Toner Chips' => './images/sec-chip.jpg',
         ];
 
         Setting::set('section_banners', json_encode($sectionBanners), 'website');
