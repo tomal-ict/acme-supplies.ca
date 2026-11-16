@@ -1194,5 +1194,227 @@
         "image": "./images/products/P074.jpg",
         "promo_discount": 0,
         "is_top_pick": false
+    },
+    {
+        "sku": "P075",
+        "title": "Amida POS Thermal Paper Roll - 2-1/4\" x 30' - 30 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Square Terminal, Clover Flex, Verifone VX680, Ingenico ICT220, 58mm POS receipt printers",
+        "price_min": "1.25",
+        "price_max": "2.49",
+        "moq": "10 Packs",
+        "sold": "3,200+ sold",
+        "tags": [
+            "Certified",
+            "Main Product"
+        ],
+        "image": "./images/products/P075.jpg",
+        "id": 75,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P076",
+        "title": "Amida Thermal Paper Rolls - 3-1/8\" x 225' - 20 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "3-1/8 Inch",
+        "compatible_printers": "Epson TM-T88, Star TSP100, Bixolon SRP-350, Munbyn, Amida AK-80250 80mm POS receipt printers",
+        "price_min": "2.99",
+        "price_max": "4.85",
+        "moq": "10 Packs",
+        "sold": "5,400+ sold",
+        "tags": [
+            "Certified",
+            "Best Seller"
+        ],
+        "image": "./images/products/P076.jpg",
+        "id": 76,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P077",
+        "title": "Amida Thermal Paper Rolls - 2-1/4\" x 60' - 35 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Verifone Vx520, Ingenico ICT220/ICT250, First Data FD400, POS credit card terminals",
+        "price_min": "1.85",
+        "price_max": "2.95",
+        "moq": "10 Packs",
+        "sold": "2,850+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P077.jpg",
+        "id": 77,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P078",
+        "title": "Amida Thermal Paper Roll - 3-1/8\" x 200' - 50 Pack (BPA Free)",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "3-1/8 Inch",
+        "compatible_printers": "Epson TM-T88 series, Star Micronics, Citizen, Bixolon, Amida AK-80250 receipt printers",
+        "price_min": "1.75",
+        "price_max": "2.65",
+        "moq": "10 Packs",
+        "sold": "4,100+ sold",
+        "tags": [
+            "Certified",
+            "BPA Free"
+        ],
+        "image": "./images/products/P078.jpg",
+        "id": 78,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P079",
+        "title": "Amida Thermal POS Paper Roll - 2-1/4\" x 60' - 80 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Standard 58mm mobile receipt printers, Bluetooth thermal printers, POS terminals",
+        "price_min": "1.45",
+        "price_max": "2.25",
+        "moq": "10 Packs",
+        "sold": "6,200+ sold",
+        "tags": [
+            "Certified",
+            "Bulk Value"
+        ],
+        "image": "./images/products/P079.jpg",
+        "id": 79,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P080",
+        "title": "Amida Thermal Paper Rolls - 2-1/4\" x 75' - 12 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Sharp, Casio, Royal cash registers, standard 58mm POS receipt printers",
+        "price_min": "1.95",
+        "price_max": "3.15",
+        "moq": "10 Packs",
+        "sold": "1,980+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P080.jpg",
+        "id": 80,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P081",
+        "title": "Amida Thermal Paper Rolls - 3-1/8\" x 225' - 12 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "3-1/8 Inch",
+        "compatible_printers": "Epson TM-T20 / TM-T88, Star TSP143, Citizen CT-S310, Amida AK-80250",
+        "price_min": "3.25",
+        "price_max": "4.95",
+        "moq": "10 Packs",
+        "sold": "3,400+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P081.jpg",
+        "id": 81,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P082",
+        "title": "Amida Thermal Paper Rolls - 3\" x 225' - 20 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "3 Inch",
+        "compatible_printers": "Samsung / Bixolon SRP-275, Citizen CBM series, 76mm/80mm thermal printers",
+        "price_min": "2.85",
+        "price_max": "4.50",
+        "moq": "10 Packs",
+        "sold": "2,150+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P082.jpg",
+        "id": 82,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P083",
+        "title": "Amida Thermal POS Paper Roll - 2-1/4\" x 30' - 70 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Handheld POS terminals, Verifone VX680, Ingenico iWL250, Pax A920",
+        "price_min": "1.15",
+        "price_max": "1.95",
+        "moq": "10 Packs",
+        "sold": "4,700+ sold",
+        "tags": [
+            "Certified",
+            "High Demand"
+        ],
+        "image": "./images/products/P083.jpg",
+        "id": 83,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P084",
+        "title": "Amida Thermal Paper Rolls - 2-1/4\" x 75' - 50 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Sam4s, Casio, Sharp electronic cash registers, credit card receipt printers",
+        "price_min": "1.70",
+        "price_max": "2.60",
+        "moq": "10 Packs",
+        "sold": "3,890+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P084.jpg",
+        "id": 84,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P085",
+        "title": "Amida Thermal Paper Roll - 2-1/4\" x 75' - 30 Pack",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Micros, Citizen, Epson, standard desktop cash register terminals",
+        "price_min": "1.80",
+        "price_max": "2.75",
+        "moq": "10 Packs",
+        "sold": "2,600+ sold",
+        "tags": [
+            "Certified"
+        ],
+        "image": "./images/products/P085.jpg",
+        "id": 85,
+        "promo_discount": 0,
+        "is_top_pick": 0
+    },
+    {
+        "sku": "P086",
+        "title": "Amida Thermal Paper Roll - 2-1/4\" x 60' - 50 Pack (BPA Free)",
+        "category": "Thermal Paper Rolls",
+        "sub_category": "2-1/4 Inch",
+        "compatible_printers": "Mobile EFTPOS terminals, Verifone, Ingenico, Dejavoo, PAX wireless payment terminals",
+        "price_min": "1.35",
+        "price_max": "2.10",
+        "moq": "10 Packs",
+        "sold": "5,120+ sold",
+        "tags": [
+            "Certified",
+            "BPA Free"
+        ],
+        "image": "./images/products/P086.jpg",
+        "id": 86,
+        "promo_discount": 0,
+        "is_top_pick": 0
     }
 ]

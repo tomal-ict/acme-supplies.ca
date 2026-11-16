@@ -876,3 +876,8 @@ Stack trace:
 [stacktrace]
 #0 {main}
 "} 
+[2026-11-16 11:32:13] local.ERROR: SQLSTATE[HY000]: General error: 1 no such table: categories {"exception":"[object] (PDOException(code: HY000): SQLSTATE[HY000]: General error: 1 no such table: categories at E:/xampp/htdocs/1_Asystem/ACME/import_thermal_paper.php:258)
+[stacktrace]
+#0 E:/xampp/htdocs/1_Asystem/ACME/import_thermal_paper.php(258): PDO->prepare('SELECT id FROM ...')
+#1 {main}
+"} 

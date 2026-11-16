@@ -315,6 +315,7 @@ export default function HomePage({ onOpenModal }) {
         { cat: "Bulk Inks", banner: "./images/sec-bulk-ink.jpg", key: "bulk" },
         { cat: "Toner Powder", banner: "./images/sec-powder.jpg", key: "powder" },
         { cat: "Printers", banner: "./images/sec-printer.jpg", key: "printers" },
+        { cat: "Thermal Paper Rolls", banner: "./images/sec-paper.jpg", key: "paper" },
       ].map(({ cat, banner, key }) => {
         const activeBanner = dynamicSectionBanners[cat] || dynamicSectionBanners[key] || banner;
         return (

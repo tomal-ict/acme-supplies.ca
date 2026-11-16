@@ -583,6 +583,7 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
                 <Link to="/products?category=Bulk%20Inks">1000ml / 500ml Bulk Refill Inks</Link>
                 <Link to="/products?category=Toner%20Powder">Bulk Toner Powder</Link>
                 <Link to="/products?category=Thermal%20Printers">Laser &amp; Thermal POS Printers</Link>
+                <Link to="/products?category=Thermal%20Paper%20Rolls">Thermal Paper Rolls</Link>
               </div>
             </li>
             <li className="has-dropdown">
@@ -642,6 +643,7 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
                 <li><Link to="/products?category=Monochrome%20Cartridges">Monochrome Cartridges</Link></li>
                 <li><Link to="/products?category=Color%20Cartridges">Color Cartridges</Link></li>
                 <li><Link to="/products?category=Inks%20%26%20Inkjets">Inks &amp; Inkjets</Link></li>
+                <li><Link to="/products?category=Thermal%20Paper%20Rolls">Thermal Paper Rolls</Link></li>
               </ul>
             </div>
             <div>

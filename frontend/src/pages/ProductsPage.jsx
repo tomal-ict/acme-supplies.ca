@@ -17,6 +17,11 @@ const CATEGORIES = [
   { key: "Toner Powder", label: "Amida Toner Powder" },
   { key: "Printers", label: "Amida Printer (A4 Laser)" },
   { key: "Thermal Printers", label: "Amida Thermal Printer (POS)" },
+  {
+    key: "Thermal Paper Rolls",
+    label: "Amida Thermal Paper Rolls",
+    children: ["2-1/4 Inch", "3-1/8 Inch", "3 Inch"],
+  },
 ];
 
 export default function ProductsPage({ onOpenModal }) {
