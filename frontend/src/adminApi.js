@@ -143,6 +143,37 @@ export async function adminToggleTopPick(id) {
   });
 }
 
+export async function adminUploadProductImage(fileOrBlobOrBase64) {
+  const token = getAdminToken();
+  const headers = {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  if (typeof fileOrBlobOrBase64 === "string") {
+    // Base64 string upload
+    const res = await fetch(`${API_BASE}/admin/products/upload-image`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ image_base64: fileOrBlobOrBase64 }),
+    });
+    return res.json();
+  } else {
+    // File or Blob upload via multipart/form-data
+    const formData = new FormData();
+    formData.append("image", fileOrBlobOrBase64);
+    const res = await fetch(`${API_BASE}/admin/products/upload-image`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+    return res.json();
+  }
+}
+
 // Sales Orders (Active & Incomplete Orders)
 export async function adminGetOrders(params = {}) {
   const qs = new URLSearchParams(params).toString();

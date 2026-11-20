@@ -93,14 +93,24 @@ export default function ProductDetailPage({ onOpenModal }) {
   const [products, setProducts] = useState([]);
   const [activeImg, setActiveImg] = useState("");
   const [activeTab, setActiveTab] = useState("details");
+  const [orderQty, setOrderQty] = useState(20);
 
   useEffect(() => {
     fetchProducts().then((list) => {
       setProducts(list);
       const found = list.find((p) => p.sku === sku) || list[0];
       if (found) {
-        const customGal = GALLERY_BY_SKU[found.sku];
-        setActiveImg(customGal ? customGal[0] : found.image);
+        let initialGal = [];
+        if (Array.isArray(found.gallery_images) && found.gallery_images.length > 0) {
+          initialGal = found.image && !found.gallery_images.includes(found.image)
+            ? [found.image, ...found.gallery_images]
+            : found.gallery_images;
+        } else if (GALLERY_BY_SKU[found.sku]) {
+          initialGal = GALLERY_BY_SKU[found.sku];
+        } else if (found.image) {
+          initialGal = [found.image];
+        }
+        setActiveImg(initialGal[0] || found.image);
       }
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -121,8 +131,19 @@ export default function ProductDetailPage({ onOpenModal }) {
     );
   }
 
-  // Strictly show ONLY this product's own image(s) — never mix other product models!
-  const gallery = GALLERY_BY_SKU[product.sku] || [product.image];
+  // Strictly show ONLY this product's own image(s) — from backend gallery or sku fallback
+  let gallery = [];
+  if (Array.isArray(product.gallery_images) && product.gallery_images.length > 0) {
+    gallery = product.image && !product.gallery_images.includes(product.image)
+      ? [product.image, ...product.gallery_images]
+      : product.gallery_images;
+  } else if (GALLERY_BY_SKU[product.sku]) {
+    gallery = GALLERY_BY_SKU[product.sku];
+  } else if (product.image) {
+    gallery = [product.image];
+  } else {
+    gallery = ["./images/products/P001.png"];
+  }
 
   const isTonerCategory =
     product.category === "Patent Gear Products" ||
@@ -135,10 +156,57 @@ export default function ProductDetailPage({ onOpenModal }) {
     .filter((p) => p.category === product.category && p.sku !== product.sku)
     .slice(0, 4);
 
-  const pMin = Number(product.price_min);
-  const pMax = Number(product.price_max);
+  const pMin = Number(product.price_min) || 0;
+  const pMax = Number(product.price_max) || pMin;
   const pMid1 = (pMax - (pMax - pMin) * 0.25).toFixed(2);
   const pMid2 = (pMax - (pMax - pMin) * 0.55).toFixed(2);
+
+  // Pricing Mode Detection
+  const hasDbTiers = Array.isArray(product.tiered_prices) && product.tiered_prices.length > 0;
+  const isSingleRate = product.price_mode === "single" || (!hasDbTiers && pMin === pMax);
+  const singlePrice = Number(product.single_price) || pMax || pMin;
+
+  const tiers = hasDbTiers
+    ? product.tiered_prices
+    : [
+        { min_qty: 20, max_qty: 99, price: pMax },
+        { min_qty: 100, max_qty: 499, price: Number(pMid1) },
+        { min_qty: 500, max_qty: 99999, price: Number(pMid2) },
+        { min_qty: 100000, max_qty: null, price: pMin },
+      ];
+
+  // Calculate current unit price based on selected quantity
+  const calculateUnitPrice = (qty) => {
+    if (isSingleRate) return singlePrice;
+    const match = tiers.find((t) => qty >= t.min_qty && (!t.max_qty || qty <= t.max_qty));
+    if (match) return Number(match.price);
+    if (tiers.length > 0) {
+      if (qty < tiers[0].min_qty) return Number(tiers[0].price);
+      return Number(tiers[tiers.length - 1].price);
+    }
+    return singlePrice;
+  };
+
+  const currentUnitPrice = calculateUnitPrice(orderQty);
+
+  // Specifications
+  const specsList = Array.isArray(product.specifications) && product.specifications.length > 0
+    ? product.specifications.map((s) => [s.key, s.value])
+    : [
+        ["Brand Name", "Amida® / OEM"],
+        ["Model / SKU", `${product.sku} — ${product.title}`],
+        ["Compatible Printers", compatiblePrinters],
+        ["Category", `${product.category}${product.sub_category ? ` (${product.sub_category})` : ""}`],
+        ["Cartridge / Product Status", "Full (Brand New Grade-A Components)"],
+        ["Feature", "Compatible with Patented Gear • 100% Testing Before Delivery"],
+        ["Page Yield", "Same Original Yield (Standard & High Yield Option)"],
+        ["Smart Chip", "Pre-installed Auto-Reset Smart Microchip (Plug and Play)"],
+        ["Certification", "ISO 9001 / ISO 14001 / CE / STMC / RoHS"],
+        ["Warranty", "18 Months (100% Satisfaction Guaranteed)"],
+        ["Bulk Packaging", "Neutral Packing / Customised Retail Box Packing"],
+        ["Single Package Size", "33 × 10.5 × 13 cm (Single Gross Weight: 0.944 kg)"],
+        ["Place of Origin", "Guangdong, China (25+ Years Experience)"],
+      ];
 
   return (
     <main className="container page-section">
@@ -222,7 +290,7 @@ export default function ProductDetailPage({ onOpenModal }) {
               <span style={{ fontSize: "18px", lineHeight: 1 }}>🖨️</span>
               <div style={{ flex: 1 }}>
                 <div style={{ color: "#0369a1", fontWeight: 700, fontSize: "12.5px", marginBottom: "3px" }}>
-                  COMPATIBLE PRINTER MODELS (যেসব প্রিন্টারে কাজ করবে):
+                  COMPATIBLE PRINTER MODELS:
                 </div>
                 <div style={{ color: "#1e293b", fontSize: "12px", lineHeight: 1.5, fontWeight: 500 }}>
                   {compatiblePrinters}
@@ -230,27 +298,83 @@ export default function ProductDetailPage({ onOpenModal }) {
               </div>
             </div>
 
-            {/* Tiered Pricing Grid */}
-            <div style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "8px", padding: "14px", marginBottom: "18px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 700, color: "#9a3412", marginBottom: "10px", textTransform: "uppercase" }}>
-                Wholesale FOB Tiered Pricing (USD)
+            {/* Single Rate vs Tiered Pricing Grid */}
+            {isSingleRate ? (
+              <div style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "8px", padding: "16px 20px", marginBottom: "18px" }}>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#9a3412", marginBottom: "6px", textTransform: "uppercase" }}>
+                  Wholesale Unit Price
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--price-red)" }}>
+                    ${singlePrice.toFixed(2)}
+                  </div>
+                  <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>/ Piece (FOB Single Rate)</span>
+                </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
-                <div>
-                  <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>20 – 99 pcs</div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--price-red)" }}>${pMax.toFixed(2)}</div>
+            ) : (
+              <div style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "8px", padding: "14px", marginBottom: "18px" }}>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#9a3412", marginBottom: "10px", textTransform: "uppercase" }}>
+                  Wholesale FOB Tiered Pricing
                 </div>
-                <div>
-                  <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>100 – 499 pcs</div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--price-red)" }}>${pMid1}</div>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(tiers.length, 4)}, 1fr)`, gap: "10px" }}>
+                  {tiers.map((t, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        padding: "8px",
+                        borderRadius: "6px",
+                        background: orderQty >= t.min_qty && (!t.max_qty || orderQty <= t.max_qty) ? "#ffedd5" : "transparent",
+                        border: orderQty >= t.min_qty && (!t.max_qty || orderQty <= t.max_qty) ? "1px solid #f97316" : "1px solid transparent",
+                      }}
+                    >
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                        {t.min_qty} {t.max_qty ? `– ${t.max_qty}` : "+"} pcs
+                      </div>
+                      <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--price-red)" }}>
+                        ${Number(t.price).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>500 – 99,999 pcs</div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--price-red)" }}>${pMid2}</div>
+              </div>
+            )}
+
+            {/* Quantity Selector & Price Summary */}
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", padding: "12px 16px", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "#334155" }}>Order Quantity (Units):</label>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <button
+                      type="button"
+                      onClick={() => setOrderQty(Math.max(1, orderQty - 10))}
+                      style={{ width: "32px", height: "34px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer", borderRadius: "4px 0 0 4px", fontWeight: 700 }}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      value={orderQty}
+                      onChange={(e) => setOrderQty(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                      style={{ width: "70px", height: "34px", textAlign: "center", borderTop: "1px solid #cbd5e1", borderBottom: "1px solid #cbd5e1", borderLeft: "none", borderRight: "none", outline: "none", fontWeight: 700 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setOrderQty(orderQty + 10)}
+                      style={{ width: "32px", height: "34px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer", borderRadius: "0 4px 4px 0", fontWeight: 700 }}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>&ge; 100,000 pcs</div>
-                  <div style={{ fontSize: "18px", fontWeight: 700, color: "var(--price-red)" }}>${pMin.toFixed(2)}</div>
+
+                <div style={{ fontSize: "13px", textAlign: "right" }}>
+                  <span style={{ color: "var(--text-muted)" }}>Applied Rate: </span>
+                  <strong style={{ color: "#0284c7" }}>${currentUnitPrice.toFixed(2)} / pc</strong>
+                  <div style={{ fontSize: "14px", fontWeight: 800, color: "#166534" }}>
+                    Subtotal: ${(currentUnitPrice * orderQty).toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -270,12 +394,12 @@ export default function ProductDetailPage({ onOpenModal }) {
                 onClick={() => {
                   window.dispatchEvent(
                     new CustomEvent("acme-add-to-cart", {
-                      detail: { product, quantity: 1 },
+                      detail: { product: { ...product, price: currentUnitPrice }, quantity: orderQty, unitPrice: currentUnitPrice },
                     })
                   );
                 }}
               >
-                🛒 Add to Cart &bull; Start Order
+                🛒 Add {orderQty} pcs to Cart &bull; Start Order
               </button>
               <button
                 type="button"
@@ -311,25 +435,23 @@ export default function ProductDetailPage({ onOpenModal }) {
 
         {activeTab === "details" ? (
           <div>
+            {/* Optional Rich Description */}
+            {product.description && (
+              <div style={{ marginBottom: "22px", background: "#f8fafc", padding: "16px 20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#0f172a", marginBottom: "8px" }}>
+                  Product Overview &amp; Description
+                </h3>
+                <div style={{ fontSize: "13.5px", color: "#334155", lineHeight: 1.6, whiteSpace: "pre-line" }}>
+                  {product.description}
+                </div>
+              </div>
+            )}
+
             <h3 style={{ fontSize: "15px", marginBottom: "12px" }}>Key Attributes</h3>
             <div style={{ overflowX: "auto", marginBottom: "24px" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                 <tbody>
-                  {[
-                    ["Brand Name", "Amida® / OEM"],
-                    ["Model / SKU", `${product.sku} — ${product.title}`],
-                    ["Compatible Printers", compatiblePrinters],
-                    ["Category", `${product.category}${product.sub_category ? ` (${product.sub_category})` : ""}`],
-                    ["Cartridge / Product Status", "Full (Brand New Grade-A Components)"],
-                    ["Feature", "Compatible with Patented Gear • 100% Testing Before Delivery"],
-                    ["Page Yield", "Same Original Yield (Standard & High Yield Option)"],
-                    ["Smart Chip", "Pre-installed Auto-Reset Smart Microchip (Plug and Play)"],
-                    ["Certification", "ISO 9001 / ISO 14001 / CE / STMC / RoHS"],
-                    ["Warranty", "18 Months (100% Satisfaction Guaranteed)"],
-                    ["Bulk Packaging", "Neutral Packing / Customised Retail Box Packing"],
-                    ["Single Package Size", "33 × 10.5 × 13 cm (Single Gross Weight: 0.944 kg)"],
-                    ["Place of Origin", "Guangdong, China (25+ Years Experience)"],
-                  ].map(([k, v]) => (
+                  {specsList.map(([k, v]) => (
                     <tr key={k} style={{ borderBottom: "1px solid var(--border-color)" }}>
                       <td style={{ padding: "9px 12px", background: "var(--bg-muted)", fontWeight: 600, width: "220px", color: "#1e293b" }}>{k}</td>
                       <td style={{ padding: "9px 12px", color: k === "Compatible Printers" ? "#0369a1" : "inherit", fontWeight: k === "Compatible Printers" ? 600 : "normal" }}>{v}</td>
@@ -353,7 +475,7 @@ export default function ProductDetailPage({ onOpenModal }) {
                 <span style={{ fontSize: "22px" }}>🖨️</span>
                 <div>
                   <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#166534", margin: 0 }}>
-                    Guaranteed Printer Compatibility (উপযোগী প্রিন্টারসমূহের তালিকা)
+                    Guaranteed Printer Compatibility
                   </h3>
                   <span style={{ fontSize: "12px", color: "#15803d" }}>
                     Engineered to 100% match OEM specifications, slotting smoothly with zero error codes.

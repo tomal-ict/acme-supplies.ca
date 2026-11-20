@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import OrderVoucher from "./OrderVoucher";
 import {
   customerCheckout,
   customerGetOrders,
@@ -74,11 +75,13 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
     customer_email: clientUser?.email || "",
     customer_phone: clientUser?.phone || "",
     shipping_address: "",
-    payment_method: "T/T Wire Transfer (30% deposit)",
+    delivery_area: "inside_city", // 'inside_city' | 'outside_city'
+    payment_method: "Cash on Delivery", // 'Cash on Delivery' | 'Online Payment'
     notes: "",
   });
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
+  const [pauseNoticeOpen, setPauseNoticeOpen] = useState(false);
 
   // Sync Cart to LocalStorage
   useEffect(() => {
@@ -92,14 +95,17 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
   // Listen to Global "acme-add-to-cart" Event
   useEffect(() => {
     const handleAddToCart = (e) => {
-      const { product, quantity = 1 } = e.detail || {};
+      const { product, quantity = 1, unitPrice } = e.detail || {};
       if (!product) return;
+
+      const finalPrice = Number(unitPrice || product.price || product.price_min || 10.0);
 
       setCartItems((prev) => {
         const existingIdx = prev.findIndex((item) => item.sku === product.sku);
         if (existingIdx >= 0) {
           const updated = [...prev];
           updated[existingIdx].quantity += quantity;
+          if (unitPrice) updated[existingIdx].price = finalPrice;
           return updated;
         } else {
           return [
@@ -108,8 +114,8 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
               id: product.id || Date.now(),
               sku: product.sku,
               title: product.title,
-              price: Number(product.price_min || product.price || 10.0),
-              price_max: Number(product.price_max || product.price_min || 10.0),
+              price: finalPrice,
+              price_max: Number(product.price_max || finalPrice),
               image: product.image,
               category: product.category,
               quantity: quantity,
@@ -117,6 +123,9 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
           ];
         }
       });
+
+      // Automatically slide in the POS Terminal Drawer
+      setCartOpen(true);
 
       // Show toast alert
       setToastMsg(`✓ Added ${product.title.slice(0, 32)}... to Cart!`);
@@ -201,6 +210,67 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
   const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  // Delivery & Free Shipping Calculation from Admin Settings
+  const insideCityCharge = parseFloat(siteSettings.delivery_charge_inside) || 60;
+  const outsideCityCharge = parseFloat(siteSettings.delivery_charge_outside) || 120;
+  const freeThreshold = parseFloat(siteSettings.free_shipping_threshold) || 5000;
+  const isFreeShippingEnabled = siteSettings.free_shipping_enabled !== "0" && siteSettings.free_shipping_enabled !== false;
+
+  const isFreeDelivery = isFreeShippingEnabled && cartTotal >= freeThreshold;
+  const currentDeliveryCharge = isFreeDelivery
+    ? 0
+    : (checkoutForm.delivery_area === "outside_city" ? outsideCityCharge : insideCityCharge);
+  const finalGrandTotal = cartTotal + currentDeliveryCharge;
+
+  // Tawk.to live chat integration if active
+  useEffect(() => {
+    if (
+      siteSettings.plugin_tawk_active === "1" &&
+      siteSettings.plugin_tawk_property_id &&
+      siteSettings.plugin_tawk_widget_id
+    ) {
+      if (!document.getElementById("tawk-script")) {
+        const s = document.createElement("script");
+        s.id = "tawk-script";
+        s.async = true;
+        s.src = `https://embed.tawk.to/${siteSettings.plugin_tawk_property_id}/${siteSettings.plugin_tawk_widget_id}`;
+        s.charset = "UTF-8";
+        s.setAttribute("crossorigin", "*");
+        document.head.appendChild(s);
+      }
+    }
+  }, [siteSettings.plugin_tawk_active, siteSettings.plugin_tawk_property_id, siteSettings.plugin_tawk_widget_id]);
+
+  // Order Pause / Suspension Calculation
+  const isPauseConfigured = siteSettings.order_pause_enabled === "1" || siteSettings.order_pause_enabled === true;
+  let isOrderPaused = false;
+  let pauseRemainingText = "";
+
+  if (isPauseConfigured) {
+    if (siteSettings.order_pause_until) {
+      const diffMs = new Date(siteSettings.order_pause_until).getTime() - Date.now();
+      if (diffMs > 0) {
+        isOrderPaused = true;
+        const totalMinutes = Math.floor(diffMs / (1000 * 60));
+        const days = Math.floor(totalMinutes / (60 * 24));
+        const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+        const minutes = totalMinutes % 60;
+        if (days > 0) {
+          pauseRemainingText = `Orders resume in ${days} day(s) ${hours} hr(s)`;
+        } else if (hours > 0) {
+          pauseRemainingText = `Orders resume in ${hours} hr(s) ${minutes} min(s)`;
+        } else {
+          pauseRemainingText = `Orders resume in ${minutes} min(s)`;
+        }
+      } else {
+        isOrderPaused = false;
+      }
+    } else {
+      isOrderPaused = true;
+      pauseRemainingText = "Ordering is currently paused";
+    }
+  }
+
   // Auth Handlers
   const handleClientLogin = async (e) => {
     e.preventDefault();
@@ -256,6 +326,11 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
   // Checkout Handler (Both Guest and Logged-in Customer)
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
+    if (isOrderPaused) {
+      setCheckoutOpen(false);
+      setPauseNoticeOpen(true);
+      return;
+    }
     if (cartItems.length === 0) {
       alert("Your cart is empty. Please add items before checking out.");
       return;
@@ -267,9 +342,12 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
         customer_email: checkoutForm.customer_email,
         customer_phone: checkoutForm.customer_phone,
         shipping_address: checkoutForm.shipping_address,
-        notes: checkoutForm.notes,
+        delivery_area: checkoutForm.delivery_area,
+        delivery_charge: currentDeliveryCharge,
+        subtotal: cartTotal,
+        total_amount: finalGrandTotal,
         payment_method: checkoutForm.payment_method,
-        total_amount: cartTotal,
+        notes: checkoutForm.notes,
         items: cartItems.map((i) => ({
           title: i.title,
           sku: i.sku,
@@ -690,377 +768,529 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
         </button>
       </div>
 
-      {/* MODAL 1: SHOPPING CART DRAWER / MODAL */}
-      {cartOpen && (
-        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setCartOpen(false)}>
-          <div className="modal-box" style={{ maxWidth: "620px" }}>
-            <div className="modal-header">
-              <h3>🛒 Wholesale Purchase Cart ({cartItemCount} items)</h3>
-              <button type="button" className="modal-close" onClick={() => setCartOpen(false)}>&times;</button>
+      {/* RIGHT-SIDE AI POS TERMINAL & CHECKOUT DRAWER */}
+      {(cartOpen || checkoutOpen) && (
+        <>
+          <div
+            className="pos-backdrop"
+            onClick={() => {
+              setCartOpen(false);
+              setCheckoutOpen(false);
+            }}
+          />
+
+          <div className="pos-drawer">
+            {/* POS Header */}
+            <div className="pos-header">
+              <div className="pos-brand-tag">
+                <span className="pos-ai-chip">⚡ AI POS</span>
+                <div>
+                  <h3 className="pos-title">Point of Sale Terminal</h3>
+                  <div className="pos-subtitle">
+                    Wholesale Express Checkout &bull; {cartItemCount} item{cartItemCount !== 1 ? "s" : ""}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="pos-close-btn"
+                onClick={() => {
+                  setCartOpen(false);
+                  setCheckoutOpen(false);
+                }}
+                title="Close POS Drawer"
+              >
+                &times;
+              </button>
             </div>
 
-            {cartItems.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px" }}>
-                <div style={{ fontSize: "40px", marginBottom: "10px" }}>🛒</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#1e293b" }}>Your cart is empty</div>
-                <p style={{ color: "#64748b", fontSize: "13px", marginTop: "4px" }}>
-                  Browse our catalog and add toner cartridges or consumables to your order.
-                </p>
-                <Link
-                  to="/products"
-                  className="btn btn-orange"
-                  onClick={() => setCartOpen(false)}
-                  style={{ display: "inline-block", marginTop: "14px" }}
-                >
-                  Explore Products &rarr;
-                </Link>
-              </div>
-            ) : (
-              <div>
-                <div style={{ maxHeight: "340px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", paddingRight: "4px" }}>
-                  {cartItems.map((item) => (
+            {/* POS Drawer Body */}
+            <div className="pos-body">
+              {cartItems.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                  <div style={{ fontSize: "48px", marginBottom: "14px" }}>🛒</div>
+                  <div style={{ fontSize: "17px", fontWeight: 700, color: "#ffffff" }}>
+                    Your cart is currently empty
+                  </div>
+                  <p style={{ color: "#94a3b8", fontSize: "13px", marginTop: "6px", maxWidth: "320px", margin: "6px auto 0" }}>
+                    Select high-yield toner cartridges or consumables from our wholesale catalog to start your order.
+                  </p>
+                  <Link
+                    to="/products"
+                    className="btn btn-orange"
+                    onClick={() => {
+                      setCartOpen(false);
+                      setCheckoutOpen(false);
+                    }}
+                    style={{ display: "inline-block", marginTop: "18px", padding: "10px 24px", fontWeight: 700 }}
+                  >
+                    Browse Wholesale Products &rarr;
+                  </Link>
+                </div>
+              ) : (
+                <form id="pos-checkout-form" onSubmit={handleCheckoutSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  
+                  {/* Order Pause Alert */}
+                  {isOrderPaused && (
                     <div
-                      key={item.sku}
                       style={{
+                        background: "rgba(239, 68, 68, 0.12)",
+                        border: "1px solid rgba(239, 68, 68, 0.4)",
+                        padding: "12px 14px",
+                        borderRadius: "8px",
                         display: "flex",
                         alignItems: "center",
-                        gap: "12px",
-                        padding: "10px",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "8px",
+                        gap: "10px",
                       }}
                     >
-                      <img
-                        src={item.image?.startsWith("/") ? `.${item.image}` : item.image}
-                        alt={item.title}
-                        style={{ width: "50px", height: "50px", objectFit: "contain", borderRadius: "4px", background: "#f8fafc" }}
-                      />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, fontSize: "13px", color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {item.title}
+                      <span style={{ fontSize: "22px" }}>⏳</span>
+                      <div>
+                        <div style={{ fontSize: "13px", fontWeight: 700, color: "#f87171" }}>
+                          Ordering is Temporarily Suspended
                         </div>
-                        <div style={{ fontSize: "11px", color: "#64748b" }}>
-                          SKU: {item.sku} &bull; ${item.price.toFixed(2)} / unit
+                        <div style={{ fontSize: "12px", color: "#fca5a5", marginTop: "2px" }}>
+                          {pauseRemainingText}
                         </div>
                       </div>
+                    </div>
+                  )}
 
-                      {/* Quantity Stepper */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(item.sku, -1)}
-                          style={{ width: "26px", height: "26px", borderRadius: "4px", border: "1px solid #cbd5e1", background: "#f8fafc", cursor: "pointer", fontWeight: 700 }}
-                        >
-                          -
-                        </button>
-                        <span style={{ fontSize: "13px", fontWeight: 700, minWidth: "22px", textAlign: "center" }}>
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateCartQuantity(item.sku, 1)}
-                          style={{ width: "26px", height: "26px", borderRadius: "4px", border: "1px solid #cbd5e1", background: "#f8fafc", cursor: "pointer", fontWeight: 700 }}
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      {/* Subtotal */}
-                      <div style={{ fontWeight: 700, fontSize: "14px", color: "#0284c7", minWidth: "65px", textAlign: "right" }}>
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </div>
-
-                      {/* Remove Button */}
+                  {/* Section 1: Cart Items */}
+                  <div className="pos-card">
+                    <div className="pos-card-header">
+                      <span className="pos-card-title">
+                        <span>📦</span> Cart Line Items ({cartItemCount})
+                      </span>
                       <button
                         type="button"
-                        onClick={() => removeCartItem(item.sku)}
-                        style={{ border: "none", background: "none", color: "#ef4444", fontSize: "16px", cursor: "pointer", padding: "4px" }}
-                        title="Remove item"
+                        onClick={() => setCartItems([])}
+                        style={{ background: "none", border: "none", color: "#ef4444", fontSize: "11px", cursor: "pointer", fontWeight: 600 }}
                       >
-                        ✕
+                        Clear All
                       </button>
                     </div>
-                  ))}
-                </div>
 
-                {/* Subtotal & Checkout Action */}
-                <div style={{ borderTop: "1px solid #e2e8f0", marginTop: "16px", paddingTop: "14px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                    <span style={{ fontSize: "14px", color: "#64748b", fontWeight: 600 }}>Estimated Order Subtotal:</span>
-                    <span style={{ fontSize: "20px", fontWeight: 800, color: "#ff6a00" }}>
-                      ${cartTotal.toFixed(2)}
-                    </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "260px", overflowY: "auto", paddingRight: "4px" }}>
+                      {cartItems.map((item) => (
+                        <div key={item.sku} className="pos-item-row">
+                          <img
+                            src={item.image?.startsWith("/") ? `.${item.image}` : item.image}
+                            alt={item.title}
+                            className="pos-item-img"
+                          />
+                          <div className="pos-item-details">
+                            <div className="pos-item-name" title={item.title}>
+                              {item.title}
+                            </div>
+                            <div className="pos-item-meta">
+                              SKU: <strong style={{ color: "#e2e8f0" }}>{item.sku}</strong> &bull; ${item.price.toFixed(2)}/pc
+                            </div>
+                          </div>
+
+                          <div className="pos-item-qty-stepper">
+                            <button
+                              type="button"
+                              className="pos-qty-btn"
+                              onClick={() => updateCartQuantity(item.sku, -1)}
+                            >
+                              -
+                            </button>
+                            <span className="pos-qty-val">{item.quantity}</span>
+                            <button
+                              type="button"
+                              className="pos-qty-btn"
+                              onClick={() => updateCartQuantity(item.sku, 1)}
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <div className="pos-item-price">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </div>
+
+                          <button
+                            type="button"
+                            className="pos-item-del-btn"
+                            onClick={() => removeCartItem(item.sku)}
+                            title="Remove item"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <button
-                      type="button"
-                      className="btn btn-outline-orange"
-                      onClick={() => setCartOpen(false)}
-                      style={{ flex: 1 }}
-                    >
-                      Continue Shopping
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-orange"
-                      onClick={() => {
-                        setCartOpen(false);
-                        setCheckoutOpen(true);
-                      }}
-                      style={{ flex: 1.5, fontWeight: 700 }}
-                    >
-                      Proceed to Complete Order &rarr;
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+                  {/* Section 2: Delivery Destination Area */}
+                  <div className="pos-card">
+                    <div className="pos-card-header">
+                      <span className="pos-card-title">
+                        <span>🚚</span> Select Delivery Area *
+                      </span>
+                    </div>
 
-      {/* MODAL 2: CHECKOUT & COMPLETE ORDER (Supports Guest & Registered Customers) */}
-      {checkoutOpen && (
-        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setCheckoutOpen(false)}>
-          <div className="modal-box" style={{ maxWidth: "620px" }}>
-            <div className="modal-header">
-              <h3>📋 Complete Wholesale Purchase Order</h3>
-              <button type="button" className="modal-close" onClick={() => setCheckoutOpen(false)}>&times;</button>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                      <label
+                        className={`pos-radio-card ${checkoutForm.delivery_area === "inside_city" ? "active" : ""}`}
+                        onClick={() => setCheckoutForm({ ...checkoutForm, delivery_area: "inside_city" })}
+                      >
+                        <input
+                          type="radio"
+                          name="pos_delivery_area"
+                          value="inside_city"
+                          checked={checkoutForm.delivery_area === "inside_city"}
+                          onChange={() => setCheckoutForm({ ...checkoutForm, delivery_area: "inside_city" })}
+                          style={{ marginTop: "2px" }}
+                        />
+                        <div>
+                          <div className="pos-radio-title">Inside City</div>
+                          <div className="pos-radio-sub">
+                            {isFreeDelivery ? (
+                              <span style={{ color: "#4ade80", fontWeight: 700 }}>FREE ($0.00)</span>
+                            ) : (
+                              <span>Fee: ${insideCityCharge.toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                      </label>
+
+                      <label
+                        className={`pos-radio-card ${checkoutForm.delivery_area === "outside_city" ? "active" : ""}`}
+                        onClick={() => setCheckoutForm({ ...checkoutForm, delivery_area: "outside_city" })}
+                      >
+                        <input
+                          type="radio"
+                          name="pos_delivery_area"
+                          value="outside_city"
+                          checked={checkoutForm.delivery_area === "outside_city"}
+                          onChange={() => setCheckoutForm({ ...checkoutForm, delivery_area: "outside_city" })}
+                          style={{ marginTop: "2px" }}
+                        />
+                        <div>
+                          <div className="pos-radio-title">Outside City</div>
+                          <div className="pos-radio-sub">
+                            {isFreeDelivery ? (
+                              <span style={{ color: "#4ade80", fontWeight: 700 }}>FREE ($0.00)</span>
+                            ) : (
+                              <span>Fee: ${outsideCityCharge.toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Free shipping trigger badge */}
+                    {isFreeDelivery ? (
+                      <div style={{ marginTop: "10px", padding: "6px 10px", background: "rgba(34, 197, 94, 0.12)", border: "1px solid rgba(34, 197, 94, 0.3)", borderRadius: "6px", fontSize: "11.5px", color: "#4ade80", fontWeight: 600 }}>
+                        🎉 Congratulations! Your order qualifies for <strong>FREE DELIVERY ($0.00)</strong>!
+                      </div>
+                    ) : (
+                      <div style={{ marginTop: "8px", fontSize: "11.5px", color: "#38bdf8" }}>
+                        💡 Add ${(freeThreshold - cartTotal).toFixed(2)} more to activate FREE delivery!
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 3: Customer Procurement Details */}
+                  <div className="pos-card">
+                    <div className="pos-card-header">
+                      <span className="pos-card-title">
+                        <span>👤</span> Customer Procurement Details *
+                      </span>
+                      {!clientUser ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCartOpen(false);
+                            setCheckoutOpen(false);
+                            setAuthTab("login");
+                            setAuthModalOpen(true);
+                          }}
+                          style={{ background: "none", border: "none", color: "#38bdf8", fontSize: "11px", cursor: "pointer", textDecoration: "underline" }}
+                        >
+                          Sign In
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: "11px", color: "#4ade80", fontWeight: 600 }}>
+                          ✓ Partner: {clientUser.name}
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+                      <div>
+                        <label className="pos-label">Customer / Company Name *</label>
+                        <input
+                          type="text"
+                          className="pos-input"
+                          placeholder="e.g. Al-Noor Trading LLC"
+                          value={checkoutForm.customer_name}
+                          onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_name: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="pos-label">Business Email *</label>
+                        <input
+                          type="email"
+                          className="pos-input"
+                          placeholder="procurement@company.com"
+                          value={checkoutForm.customer_email}
+                          onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_email: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+                      <div>
+                        <label className="pos-label">Phone / WhatsApp Number *</label>
+                        <input
+                          type="text"
+                          className="pos-input"
+                          placeholder="+880 1XXX-XXXXXX / +1 (555) 000-0000"
+                          value={checkoutForm.customer_phone}
+                          onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_phone: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="pos-label">Special Packing / Notes</label>
+                        <input
+                          type="text"
+                          className="pos-input"
+                          placeholder="Optional packaging or invoice marks..."
+                          value={checkoutForm.notes}
+                          onChange={(e) => setCheckoutForm({ ...checkoutForm, notes: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="pos-label">Delivery Destination / Full Shipping Address *</label>
+                      <textarea
+                        className="pos-textarea"
+                        rows={2}
+                        placeholder="Warehouse, Building, Road, Area, City..."
+                        value={checkoutForm.shipping_address}
+                        onChange={(e) => setCheckoutForm({ ...checkoutForm, shipping_address: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Section 4: Payment Method */}
+                  <div className="pos-card">
+                    <div className="pos-card-header">
+                      <span className="pos-card-title">
+                        <span>💳</span> Select Payment Method *
+                      </span>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                      <label
+                        className={`pos-radio-card ${checkoutForm.payment_method === "Cash on Delivery" ? "active-payment" : ""}`}
+                        onClick={() => setCheckoutForm({ ...checkoutForm, payment_method: "Cash on Delivery" })}
+                      >
+                        <input
+                          type="radio"
+                          name="pos_payment_method"
+                          value="Cash on Delivery"
+                          checked={checkoutForm.payment_method === "Cash on Delivery"}
+                          onChange={() => setCheckoutForm({ ...checkoutForm, payment_method: "Cash on Delivery" })}
+                          style={{ marginTop: "2px" }}
+                        />
+                        <div>
+                          <div className="pos-radio-title">💵 Cash on Delivery</div>
+                          <div className="pos-radio-sub">Pay upon physical delivery</div>
+                        </div>
+                      </label>
+
+                      <label
+                        className={`pos-radio-card ${checkoutForm.payment_method === "Online Payment" ? "active-payment" : ""}`}
+                        onClick={() => setCheckoutForm({ ...checkoutForm, payment_method: "Online Payment" })}
+                      >
+                        <input
+                          type="radio"
+                          name="pos_payment_method"
+                          value="Online Payment"
+                          checked={checkoutForm.payment_method === "Online Payment"}
+                          onChange={() => setCheckoutForm({ ...checkoutForm, payment_method: "Online Payment" })}
+                          style={{ marginTop: "2px" }}
+                        />
+                        <div>
+                          <div className="pos-radio-title">💳 Online Payment</div>
+                          <div className="pos-radio-sub">Direct Bank Wire / Online Gateway</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                </form>
+              )}
             </div>
 
-            {/* Guest Checkout Banner */}
-            {!clientUser ? (
-              <div
-                style={{
-                  background: "#eff6ff",
-                  border: "1px solid #bfdbfe",
-                  borderRadius: "6px",
-                  padding: "10px 14px",
-                  fontSize: "12.5px",
-                  color: "#1e40af",
-                  marginBottom: "14px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span>🛍️ <strong>Guest Checkout:</strong> No account required to complete this order!</span>
+            {/* POS Sticky Footer */}
+            {cartItems.length > 0 && (
+              <div className="pos-footer">
+                <div className="pos-summary-row">
+                  <span>Items Subtotal ({cartItemCount} pcs):</span>
+                  <span style={{ color: "#ffffff", fontWeight: 700 }}>${cartTotal.toFixed(2)}</span>
+                </div>
+                <div className="pos-summary-row">
+                  <span>Delivery ({checkoutForm.delivery_area === "outside_city" ? "Outside City" : "Inside City"}):</span>
+                  <span>
+                    {isFreeDelivery ? (
+                      <strong style={{ color: "#4ade80" }}>FREE ($0.00)</strong>
+                    ) : (
+                      <strong style={{ color: "#ffffff" }}>${currentDeliveryCharge.toFixed(2)}</strong>
+                    )}
+                  </span>
+                </div>
+                <div className="pos-grand-row">
+                  <div>
+                    <div style={{ fontSize: "11px", textTransform: "uppercase", color: "#94a3b8", letterSpacing: "0.5px" }}>
+                      Grand Total Payable
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#64748b" }}>
+                      Inclusive of all taxes &amp; fees
+                    </div>
+                  </div>
+                  <div className="pos-grand-total">
+                    ${finalGrandTotal.toFixed(2)}
+                  </div>
+                </div>
+
                 <button
-                  type="button"
-                  onClick={() => {
-                    setCheckoutOpen(false);
-                    setAuthTab("login");
-                    setAuthModalOpen(true);
-                  }}
-                  style={{ background: "none", border: "none", color: "#0284c7", fontWeight: 700, cursor: "pointer", textDecoration: "underline", fontSize: "12px" }}
+                  type="submit"
+                  form="pos-checkout-form"
+                  className="pos-confirm-btn"
+                  disabled={checkoutLoading || isOrderPaused}
                 >
-                  Sign in instead
+                  {checkoutLoading ? (
+                    "Processing Order..."
+                  ) : isOrderPaused ? (
+                    "⏸️ Orders Paused (Checkout Suspended)"
+                  ) : (
+                    <>
+                      <span>⚡ Confirm &amp; Place Order</span>
+                      <span>(${finalGrandTotal.toFixed(2)})</span>
+                    </>
+                  )}
                 </button>
               </div>
-            ) : (
+            )}
+          </div>
+        </>
+      )}
+
+      {/* MODAL 3: ORDER COMPLETION CONFIRMATION OFFICIAL VOUCHER */}
+      {completedOrder && (
+        <OrderVoucher
+          order={completedOrder}
+          settings={siteSettings}
+          onClose={() => setCompletedOrder(null)}
+        />
+      )}
+
+      {/* MODAL: ORDER PAUSE & TEMPORARY SUSPENSION NOTICE */}
+      {pauseNoticeOpen && (
+        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setPauseNoticeOpen(false)}>
+          <div className="modal-box" style={{ maxWidth: "560px", textAlign: "center", padding: "28px 24px" }}>
+            <div
+              style={{
+                width: "68px",
+                height: "68px",
+                background: "#fef3c7",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px",
+                fontSize: "32px",
+                border: "2px solid #f59e0b",
+                boxShadow: "0 4px 14px rgba(245, 158, 11, 0.2)",
+              }}
+            >
+              ⏳
+            </div>
+
+            <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "8px" }}>
+              Welcome Valued Customer!
+            </h2>
+
+            <div
+              style={{
+                fontSize: "13.5px",
+                color: "#334155",
+                lineHeight: 1.65,
+                marginBottom: "16px",
+                background: "#f8fafc",
+                padding: "16px 18px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                whiteSpace: "pre-line",
+              }}
+            >
+              {siteSettings.order_pause_message ||
+                "Our factory and storefront ordering is temporarily paused for queue fulfillment. Ordering will resume shortly."}
+            </div>
+
+            {pauseRemainingText && (
               <div
                 style={{
-                  background: "#ecfdf5",
-                  border: "1px solid #a7f3d0",
-                  borderRadius: "6px",
-                  padding: "10px 14px",
-                  fontSize: "12.5px",
-                  color: "#065f46",
-                  marginBottom: "14px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "#eff6ff",
+                  border: "1px solid #93c5fd",
+                  padding: "8px 20px",
+                  borderRadius: "30px",
+                  fontSize: "13.5px",
+                  fontWeight: 700,
+                  color: "#1d4ed8",
+                  marginBottom: "16px",
                 }}
               >
-                ✓ Ordering as registered partner: <strong>{clientUser.name}</strong> ({clientUser.email})
+                <span>⏰</span>
+                <span>{pauseRemainingText}</span>
               </div>
             )}
 
-            <form onSubmit={handleCheckoutSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                <div>
-                  <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                    Customer / Company Name *
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="e.g. Al-Noor Trading LLC"
-                    value={checkoutForm.customer_name}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                    Business Email *
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    placeholder="procurement@company.com"
-                    value={checkoutForm.customer_email}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_email: e.target.value })}
-                    required
-                  />
-                </div>
+            {siteSettings.order_pause_until && (
+              <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "18px" }}>
+                Scheduled Ordering Resume Time:{" "}
+                <strong style={{ color: "#0f172a" }}>
+                  {new Date(siteSettings.order_pause_until).toLocaleString()}
+                </strong>
               </div>
+            )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                <div>
-                  <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                    Phone / WhatsApp Number
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="+1 (555) 000-0000"
-                    value={checkoutForm.customer_phone}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, customer_phone: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                    Payment Terms
-                  </label>
-                  <select
-                    className="form-control"
-                    value={checkoutForm.payment_method}
-                    onChange={(e) => setCheckoutForm({ ...checkoutForm, payment_method: e.target.value })}
-                  >
-                    <option value="T/T Wire Transfer (30% deposit)">T/T Wire Transfer (30% deposit)</option>
-                    <option value="Letter of Credit (L/C at sight)">Letter of Credit (L/C at sight)</option>
-                    <option value="Trade Assurance Escrow">Trade Assurance Escrow</option>
-                    <option value="Cash On Delivery / Warehouse Pickup">Cash On Delivery / Warehouse Pickup</option>
-                  </select>
-                </div>
-              </div>
+            <div
+              style={{
+                borderTop: "1px solid #e2e8f0",
+                paddingTop: "14px",
+                fontSize: "12px",
+                color: "#64748b",
+                marginBottom: "20px",
+                lineHeight: 1.5,
+              }}
+            >
+              For any urgent inquiries or priority wholesale quotes: <br />
+              <strong>📞 {siteSettings.contact_phone || "+1 604 316 8138"}</strong> &bull;{" "}
+              <strong>✉️ {siteSettings.contact_email || "acme.info.swapan@gmail.com"}</strong>
+            </div>
 
-              <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                  Delivery Destination / Shipping Address *
-                </label>
-                <textarea
-                  className="form-control"
-                  rows="2"
-                  placeholder="Street, City, Port of discharge, Country..."
-                  value={checkoutForm.shipping_address}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, shipping_address: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "12px", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                  Special Instructions / Custom Labeling Notes
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Optional packing requirements, shipping marks..."
-                  value={checkoutForm.notes}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, notes: e.target.value })}
-                />
-              </div>
-
-              {/* Order Items Summary Box */}
-              <div style={{ background: "#f8fafc", padding: "10px 14px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", fontWeight: 600 }}>
-                  <span>Items to be ordered ({cartItemCount}):</span>
-                  <span style={{ color: "#ff6a00", fontWeight: 800 }}>Total: ${cartTotal.toFixed(2)}</span>
-                </div>
-                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
-                  {cartItems.map((i) => `${i.title} (${i.quantity} pcs)`).join(" • ")}
-                </div>
-              </div>
-
-              <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
-                <button type="button" className="btn btn-outline-orange" onClick={() => setCheckoutOpen(false)} style={{ flex: 1 }}>
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-orange"
-                  style={{ flex: 2, fontWeight: 700 }}
-                  disabled={checkoutLoading}
-                >
-                  {checkoutLoading ? "Processing Order..." : `Confirm & Complete Order ($${cartTotal.toFixed(2)})`}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: ORDER COMPLETION CONFIRMATION INVOICE */}
-      {completedOrder && (
-        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setCompletedOrder(null)}>
-          <div className="modal-box" style={{ maxWidth: "580px" }}>
-            <div style={{ textAlign: "center", padding: "10px 0 20px" }}>
-              <div style={{ fontSize: "44px", color: "#10b981", marginBottom: "6px" }}>✓</div>
-              <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", margin: 0 }}>
-                Order Placed Successfully!
-              </h2>
-              <div style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>
-                Thank you for your business. Your order is logged and awaiting dispatch.
-              </div>
-
-              <div
-                style={{
-                  display: "inline-block",
-                  margin: "16px auto",
-                  background: "#f1f5f9",
-                  border: "1px dashed #0284c7",
-                  padding: "8px 20px",
-                  borderRadius: "6px",
-                  fontSize: "15px",
-                  fontWeight: 800,
-                  color: "#0284c7",
-                  letterSpacing: "0.5px",
-                }}
+            <div>
+              <button
+                type="button"
+                className="btn btn-orange"
+                onClick={() => setPauseNoticeOpen(false)}
+                style={{ minWidth: "170px", padding: "10px 24px", fontWeight: 700, fontSize: "13.5px" }}
               >
-                Order Code: {completedOrder.order_code}
-              </div>
-
-              <div style={{ textAlign: "left", background: "#f8fafc", padding: "14px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <span style={{ color: "#64748b" }}>Customer:</span>
-                  <strong>{completedOrder.customer_name}</strong>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <span style={{ color: "#64748b" }}>Email:</span>
-                  <span>{completedOrder.customer_email}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <span style={{ color: "#64748b" }}>Delivery Status:</span>
-                  <span style={{ color: "#f59e0b", fontWeight: 700 }}>PENDING (In Processing)</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                  <span style={{ color: "#64748b" }}>Total Amount:</span>
-                  <span style={{ color: "#0284c7", fontWeight: 800, fontSize: "15px" }}>${Number(completedOrder.total_amount).toFixed(2)}</span>
-                </div>
-                <div style={{ marginTop: "10px", paddingTop: "10px", borderTop: "1px solid #e2e8f0" }}>
-                  <span style={{ color: "#64748b", display: "block", marginBottom: "4px" }}>Shipping Destination:</span>
-                  <div>{completedOrder.shipping_address}</div>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-                <button
-                  type="button"
-                  className="btn btn-outline-orange"
-                  onClick={() => window.print()}
-                  style={{ flex: 1 }}
-                >
-                  🖨️ Print Receipt
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-orange"
-                  onClick={() => setCompletedOrder(null)}
-                  style={{ flex: 1.5 }}
-                >
-                  Continue Shopping
-                </button>
-              </div>
+                Got it / Close Notice
+              </button>
             </div>
           </div>
         </div>
@@ -1353,6 +1583,22 @@ export default function Layout({ children, onOpenModal, modalState, onCloseModal
             </form>
           </div>
         </div>
+      )}
+
+      {/* Floating WhatsApp Chat Widget if activated in Admin Plugins */}
+      {siteSettings.plugin_whatsapp_active === "1" && siteSettings.plugin_whatsapp_number && (
+        <a
+          href={`https://wa.me/${siteSettings.plugin_whatsapp_number.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+            siteSettings.plugin_whatsapp_message || "Hello AMIDA Supplies, I would like to inquire about products."
+          )}`}
+          target="_blank"
+          rel="noreferrer"
+          className="floating-whatsapp-btn"
+          title="Chat with us on WhatsApp"
+        >
+          <span style={{ fontSize: "20px" }}>💬</span>
+          <span>WhatsApp Chat</span>
+        </a>
       )}
     </>
   );

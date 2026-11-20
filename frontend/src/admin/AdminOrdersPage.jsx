@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import {
   adminDeleteOrder,
   adminGetOrders,
+  adminGetSettings,
   adminUpdateOrderStatus,
 } from "../adminApi";
+import OrderVoucher from "../components/OrderVoucher";
 
 export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
   const [orders, setOrders] = useState([]);
@@ -24,10 +26,22 @@ export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
 
   // View / Edit Modal
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [voucherOrder, setVoucherOrder] = useState(null);
+  const [siteSettings, setSiteSettings] = useState({});
   const [newDeliveryStatus, setNewDeliveryStatus] = useState("pending");
   const [newPaymentStatus, setNewPaymentStatus] = useState("unpaid");
   const [orderNotes, setOrderNotes] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    adminGetSettings()
+      .then((res) => {
+        if (res.success && res.settings) {
+          setSiteSettings(res.settings);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const loadOrders = async () => {
     try {
@@ -394,11 +408,21 @@ export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
       {/* Modal: View & Update Order */}
       {selectedOrder && (
         <div className="adm-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setSelectedOrder(null)}>
-          <div className="adm-modal" style={{ maxWidth: "700px" }}>
+          <div className="adm-modal" style={{ maxWidth: "780px" }}>
             <div className="adm-modal-header">
-              <h2 className="adm-modal-title">
-                Order Invoice Details: {selectedOrder.order_code}
-              </h2>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <h2 className="adm-modal-title" style={{ margin: 0 }}>
+                  Order Invoice: {selectedOrder.order_code}
+                </h2>
+                <button
+                  type="button"
+                  className="adm-btn adm-btn-primary adm-btn-sm"
+                  onClick={() => setVoucherOrder(selectedOrder)}
+                  style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 700 }}
+                >
+                  🖨️ Print Voucher
+                </button>
+              </div>
               <button type="button" className="adm-modal-close" onClick={() => setSelectedOrder(null)}>
                 &times;
               </button>
@@ -429,8 +453,24 @@ export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
                   <div style={{ color: "#fff" }}>{selectedOrder.customer_phone || "N/A"}</div>
                 </div>
                 <div>
-                  <div className="adm-label">Order Date</div>
+                  <div className="adm-label">Order Date &amp; Time</div>
                   <div style={{ color: "#fff" }}>{new Date(selectedOrder.created_at).toLocaleString()}</div>
+                </div>
+                <div>
+                  <div className="adm-label">Delivery Destination Area</div>
+                  <div style={{ color: "#38bdf8", fontWeight: 600 }}>
+                    {selectedOrder.delivery_area === "outside_city"
+                      ? "Outside City"
+                      : selectedOrder.delivery_area === "inside_city"
+                      ? "Inside City"
+                      : selectedOrder.delivery_area || "Standard Delivery"}
+                  </div>
+                </div>
+                <div>
+                  <div className="adm-label">Payment Method</div>
+                  <div style={{ color: "#facc15", fontWeight: 600 }}>
+                    {selectedOrder.payment_method || "Cash on Delivery"}
+                  </div>
                 </div>
                 <div style={{ gridColumn: "1 / -1" }}>
                   <div className="adm-label">Shipping / Port Delivery Destination</div>
@@ -457,24 +497,47 @@ export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {(selectedOrder.items || []).map((it, idx) => (
-                        <tr key={idx}>
-                          <td style={{ color: "var(--adm-accent-cyan)", fontWeight: 700 }}>{it.sku}</td>
-                          <td>{it.title}</td>
-                          <td>${Number(it.price).toFixed(2)}</td>
-                          <td>{it.qty} pcs</td>
-                          <td style={{ textAlign: "right", fontWeight: 700, color: "#fff" }}>
-                            ${(Number(it.price) * Number(it.qty)).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
+                      {(selectedOrder.items || []).map((it, idx) => {
+                        const qty = Number(it.quantity || it.qty || 1);
+                        const price = Number(it.price || 0);
+                        return (
+                          <tr key={idx}>
+                            <td style={{ color: "var(--adm-accent-cyan)", fontWeight: 700 }}>{it.sku || "N/A"}</td>
+                            <td>{it.title}</td>
+                            <td>${price.toFixed(2)}</td>
+                            <td>{qty} pcs</td>
+                            <td style={{ textAlign: "right", fontWeight: 700, color: "#fff" }}>
+                              ${(price * qty).toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan={4} style={{ textAlign: "right", fontWeight: 700 }}>
-                          Total FOB Amount:
+                        <td colSpan={4} style={{ textAlign: "right", fontWeight: 600 }}>
+                          Items Subtotal:
                         </td>
-                        <td style={{ textAlign: "right", fontWeight: 800, color: "#34d399", fontSize: "16px" }}>
+                        <td style={{ textAlign: "right", fontWeight: 700, color: "#fff" }}>
+                          ${(
+                            Number(selectedOrder.subtotal) ||
+                            (selectedOrder.items || []).reduce((acc, it) => acc + Number(it.price || 0) * Number(it.quantity || it.qty || 1), 0)
+                          ).toFixed(2)}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: "right", fontWeight: 600 }}>
+                          Delivery Charge:
+                        </td>
+                        <td style={{ textAlign: "right", fontWeight: 700, color: Number(selectedOrder.delivery_charge) <= 0 ? "#34d399" : "#fff" }}>
+                          {Number(selectedOrder.delivery_charge) <= 0 ? "FREE ($0.00)" : `$${Number(selectedOrder.delivery_charge).toFixed(2)}`}
+                        </td>
+                      </tr>
+                      <tr style={{ background: "#1e293b" }}>
+                        <td colSpan={4} style={{ textAlign: "right", fontWeight: 800, fontSize: "14px" }}>
+                          Grand Total Payable:
+                        </td>
+                        <td style={{ textAlign: "right", fontWeight: 800, color: "#34d399", fontSize: "17px" }}>
                           ${Number(selectedOrder.total_amount).toFixed(2)}
                         </td>
                       </tr>
@@ -541,6 +604,15 @@ export default function AdminOrdersPage({ onToast, initialTab = "active" }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Official Voucher Printable Modal */}
+      {voucherOrder && (
+        <OrderVoucher
+          order={voucherOrder}
+          settings={siteSettings}
+          onClose={() => setVoucherOrder(null)}
+        />
       )}
     </div>
   );

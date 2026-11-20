@@ -14,7 +14,7 @@ import AdminWebsiteSetupPage from "./AdminWebsiteSetupPage";
 export default function AdminApp() {
   const [token, setToken] = useState(getAdminToken());
   const [user, setUser] = useState(getStoredAdminUser());
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("plugins"); // Default to plugins or dashboard
   const [unreadInquiries, setUnreadInquiries] = useState(0);
   const [toasts, setToasts] = useState([]);
 
@@ -46,6 +46,39 @@ export default function AdminApp() {
     return <AdminLoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
+  const isSettingsGroup = [
+    "settings",
+    "plugins",
+    "email_settings",
+    "seo_settings",
+    "language_settings",
+    "page_settings",
+    "sms_settings",
+    "notification_settings",
+  ].includes(activePage);
+
+  const getSettingsTab = () => {
+    switch (activePage) {
+      case "plugins":
+        return "plugin";
+      case "email_settings":
+        return "email";
+      case "seo_settings":
+        return "seo";
+      case "language_settings":
+        return "language";
+      case "page_settings":
+        return "page";
+      case "sms_settings":
+        return "sms";
+      case "notification_settings":
+        return "notification";
+      case "settings":
+      default:
+        return "site";
+    }
+  };
+
   return (
     <>
       <AdminLayout
@@ -72,7 +105,13 @@ export default function AdminApp() {
           />
         )}
         {activePage === "website_setup" && <AdminWebsiteSetupPage onToast={showToast} />}
-        {activePage === "settings" && <AdminGeneralSettingsPage onToast={showToast} />}
+        {isSettingsGroup && (
+          <AdminGeneralSettingsPage
+            key={activePage}
+            onToast={showToast}
+            initialTab={getSettingsTab()}
+          />
+        )}
         {activePage === "security" && <AdminSecurityPage onToast={showToast} />}
       </AdminLayout>
 

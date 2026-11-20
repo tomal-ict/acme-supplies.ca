@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -110,11 +111,41 @@ class CustomerOrderController extends Controller
      */
     public function checkout(Request $request): JsonResponse
     {
+        // Check if Order Pause is active
+        $pauseEnabled = Setting::get('order_pause_enabled', '0');
+        if ($pauseEnabled === '1' || $pauseEnabled === true) {
+            $pauseUntil = Setting::get('order_pause_until');
+            $isStillPaused = true;
+            if ($pauseUntil) {
+                try {
+                    $resumeTime = \Carbon\Carbon::parse($pauseUntil);
+                    if (now()->greaterThanOrEqualTo($resumeTime)) {
+                        $isStillPaused = false;
+                    }
+                } catch (\Throwable $e) {
+                    $isStillPaused = true;
+                }
+            }
+
+            if ($isStillPaused) {
+                $customMsg = Setting::get('order_pause_message', '');
+                return response()->json([
+                    'success' => false,
+                    'is_paused' => true,
+                    'pause_until' => $pauseUntil,
+                    'message' => $customMsg ?: 'Currently new orders are temporarily paused. Please check back later!',
+                ], 422);
+            }
+        }
+
         $validated = $request->validate([
             'customer_name' => 'required|string|max:150',
             'customer_email' => 'required|email|max:190',
             'customer_phone' => 'nullable|string|max:50',
             'shipping_address' => 'required|string|max:1000',
+            'delivery_area' => 'nullable|string|max:100',
+            'delivery_charge' => 'nullable|numeric|min:0',
+            'subtotal' => 'nullable|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.title' => 'required|string',
             'items.*.sku' => 'nullable|string',
@@ -126,13 +157,16 @@ class CustomerOrderController extends Controller
             'total_amount' => 'nullable|numeric',
         ]);
 
-        // Calculate total amount from items
-        $calculatedTotal = 0;
+        // Calculate item subtotal
+        $calculatedSubtotal = 0;
         foreach ($validated['items'] as $item) {
-            $calculatedTotal += floatval($item['price']) * intval($item['quantity']);
+            $qty = isset($item['quantity']) ? intval($item['quantity']) : (isset($item['qty']) ? intval($item['qty']) : 1);
+            $calculatedSubtotal += floatval($item['price']) * $qty;
         }
 
-        $total = $validated['total_amount'] ?? $calculatedTotal;
+        $subtotal = isset($validated['subtotal']) ? floatval($validated['subtotal']) : $calculatedSubtotal;
+        $deliveryCharge = isset($validated['delivery_charge']) ? floatval($validated['delivery_charge']) : 0.00;
+        $total = isset($validated['total_amount']) ? floatval($validated['total_amount']) : ($subtotal + $deliveryCharge);
         $orderCode = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
 
         $order = Order::create([
@@ -141,12 +175,16 @@ class CustomerOrderController extends Controller
             'customer_email' => $validated['customer_email'],
             'customer_phone' => $validated['customer_phone'] ?? '',
             'shipping_address' => $validated['shipping_address'],
+            'delivery_area' => $validated['delivery_area'] ?? 'inside_city',
+            'delivery_charge' => $deliveryCharge,
+            'subtotal' => $subtotal,
             'total_amount' => $total,
             'delivery_status' => 'pending',
             'payment_status' => 'unpaid',
+            'payment_method' => $validated['payment_method'] ?? 'Cash on Delivery',
             'is_incomplete' => false,
             'items' => $validated['items'],
-            'notes' => ($validated['payment_method'] ? "Payment Method: " . $validated['payment_method'] . ". " : "") . ($validated['notes'] ?? ''),
+            'notes' => $validated['notes'] ?? '',
         ]);
 
         return response()->json([

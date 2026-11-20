@@ -9,15 +9,22 @@ import {
   adminUpdateSeo,
   adminUpdateSettings,
   adminUpdateUser,
-  getApiBase,
 } from "../adminApi";
 
-export default function AdminGeneralSettingsPage({ onToast }) {
-  const [activeTab, setActiveTab] = useState("general");
+export default function AdminGeneralSettingsPage({ onToast, initialTab = "plugin" }) {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
+
+  // Synchronize when initialTab prop changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Settings State
   const [settings, setSettings] = useState({
+    // General Site Info
     site_name: "AMIDA OFFICE SUPPLIES LIMITED",
     site_tagline: "Price Quality Service",
     site_url: "https://www.acme-supplies.ca",
@@ -27,8 +34,20 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     contact_phone: "+1 604 316 8138",
     contact_email: "acme.info.swapan@gmail.com",
     currency: "USD",
-    timezone: "Asia/Dhaka",
+    timezone: "America/Edmonton",
     date_format: "Y-m-d H:i:s",
+
+    // Delivery & Shipping
+    delivery_charge_inside: "60",
+    delivery_charge_outside: "120",
+    free_shipping_threshold: "5000",
+    free_shipping_enabled: "1",
+    shipping_policy: "Express Delivery: 24-48 hours inside city, 48-72 hours nationwide.",
+
+    // Order Pause
+    order_pause_enabled: "0",
+    order_pause_until: "",
+    order_pause_message: "Dear Valued Customer, our factory and storefront ordering system is temporarily paused for queue processing. Orders will resume shortly. We apologize for any inconvenience.",
 
     // SMTP
     smtp_enabled: "1",
@@ -43,11 +62,76 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     autoresponder_enabled: "1",
     autoresponder_subject: "Welcome to AMIDA OFFICE SUPPLIES LIMITED - Request Received",
     autoresponder_body: "",
+
+    // Language & Localization
+    default_language: "English",
+    available_languages: "English, French, Bengali",
+    rtl_direction: "0",
+
+    // Static Pages Content
+    page_about_title: "About AMIDA Supplies Limited",
+    page_about_content: "AMIDA OFFICE SUPPLIES LIMITED is a premier supplier of industrial stationery, printer toners, premium copier paper, and office supplies in Acme, Alberta.",
+    page_privacy_title: "Privacy Policy",
+    page_privacy_content: "We take customer data confidentiality and transaction safety very seriously under Canadian commercial privacy standards.",
+    page_terms_title: "Terms and Conditions",
+    page_terms_content: "All orders placed are subject to product availability and standard corporate trading guidelines.",
+    page_return_title: "Return and Refund Policy",
+    page_return_content: "Damaged or incorrect shipments must be reported within 7 business days of delivery for a full replacement or refund.",
+
+    // SMS Gateway
+    sms_provider: "twilio",
+    sms_twilio_sid: "",
+    sms_twilio_token: "",
+    sms_twilio_from: "",
+    sms_order_template: "Dear {customer_name}, your AMIDA order #{order_id} of ${total} is confirmed. Thank you!",
+
+    // Notification Toggles (NO sound tune)
+    notif_order_placed: "1",
+    notif_low_stock: "1",
+    notif_inquiry_received: "1",
+    notif_customer_receipt: "1",
+    notif_customer_dispatch: "1",
+
+    // Third Party Plugins
+    plugin_tawk_active: "0",
+    plugin_tawk_property_id: "",
+    plugin_tawk_widget_id: "",
+
+    plugin_recaptcha_active: "0",
+    plugin_recaptcha_site_key: "",
+    plugin_recaptcha_secret_key: "",
+
+    plugin_google_analytics_active: "0",
+    plugin_google_analytics_id: "",
+
+    plugin_facebook_messenger_active: "0",
+    plugin_facebook_page_id: "",
+    plugin_facebook_app_id: "",
+
+    plugin_reloadly_active: "0",
+    plugin_reloadly_client_id: "",
+    plugin_reloadly_client_secret: "",
+
+    plugin_tpaga_active: "0",
+    plugin_tpaga_api_key: "",
+
+    plugin_twilio_sms_active: "0",
+    plugin_twilio_sid: "",
+    plugin_twilio_token: "",
+    plugin_twilio_from: "",
+
+    plugin_whatsapp_active: "0",
+    plugin_whatsapp_number: "+1 604 316 8138",
+    plugin_whatsapp_message: "Hello AMIDA Supplies, I would like to inquire about office products.",
+
+    plugin_custom_script_active: "0",
+    plugin_header_script: "",
+    plugin_footer_script: "",
   });
 
   // Users State
   const [users, setUsers] = useState([]);
-  const [userModal, setUserModal] = useState(null); // 'create' | 'edit'
+  const [userModal, setUserModal] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [userForm, setUserForm] = useState({
     name: "",
@@ -75,6 +159,12 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     robots_txt: "",
     sitemap_enabled: "1",
   });
+
+  // Active Plugin Modal State
+  const [activePluginModal, setActivePluginModal] = useState(null);
+
+  // Site Settings Sub-Tab (General vs Pause vs Shipping vs Users)
+  const [siteSubTab, setSiteSubTab] = useState("company");
 
   const loadAll = async () => {
     try {
@@ -105,19 +195,17 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     loadAll();
   }, []);
 
-  // Save General or SMTP Settings
-  const handleSaveSettings = async (group) => {
+  const handleSaveSettings = async (group = "general", customToast = null) => {
     try {
       const res = await adminUpdateSettings(settings, group);
       if (res.success) {
-        onToast(`${group.toUpperCase()} settings saved successfully!`, "success");
+        onToast(customToast || `${group.toUpperCase()} settings updated successfully!`, "success");
       }
     } catch (err) {
       onToast(err.message, "error");
     }
   };
 
-  // Save SEO
   const handleSaveSeo = async (e) => {
     e.preventDefault();
     try {
@@ -130,14 +218,12 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     }
   };
 
-  // Test SMTP
-  const handleRunSmtpTest = async (e) => {
+  const handleTestSmtp = async (e) => {
     e.preventDefault();
     if (!testEmail) {
-      onToast("Please enter an email address to receive test message.", "error");
+      onToast("Please enter an email address to send the test message to", "error");
       return;
     }
-
     setTestingSmtp(true);
     setTestResult(null);
     try {
@@ -151,9 +237,12 @@ export default function AdminGeneralSettingsPage({ onToast }) {
         smtp_from_name: settings.smtp_from_name,
         smtp_from_email: settings.smtp_from_email,
       });
-
-      setTestResult({ success: res.success, message: res.message });
-      onToast(res.message, res.success ? "success" : "error");
+      setTestResult(res);
+      if (res.success) {
+        onToast(res.message, "success");
+      } else {
+        onToast(res.message, "error");
+      }
     } catch (err) {
       setTestResult({ success: false, message: err.message });
       onToast(err.message, "error");
@@ -162,48 +251,22 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     }
   };
 
-  // User Actions
-  const handleOpenCreateUser = () => {
-    setUserForm({
-      name: "",
-      username: "",
-      email: "",
-      password: "",
-      role: "admin",
-      is_active: true,
-      permissions: ["products.manage", "inquiries.manage"],
-    });
-    setUserModal("create");
-  };
-
-  const handleOpenEditUser = (u) => {
-    setCurrentUser(u);
-    setUserForm({
-      name: u.name,
-      username: u.username || "",
-      email: u.email,
-      password: "",
-      role: u.role,
-      is_active: Boolean(u.is_active),
-      permissions: u.permissions || [],
-    });
-    setUserModal("edit");
-  };
-
   const handleSaveUser = async (e) => {
     e.preventDefault();
     try {
       if (userModal === "create") {
         const res = await adminCreateUser(userForm);
         if (res.success) {
-          onToast("User account created!", "success");
+          onToast("User account created successfully!", "success");
           setUserModal(null);
           loadAll();
         }
       } else if (userModal === "edit") {
-        const res = await adminUpdateUser(currentUser.id, userForm);
+        const payload = { ...userForm };
+        if (!payload.password) delete payload.password;
+        const res = await adminUpdateUser(currentUser.id, payload);
         if (res.success) {
-          onToast("User account updated!", "success");
+          onToast("User account updated successfully!", "success");
           setUserModal(null);
           loadAll();
         }
@@ -213,773 +276,1315 @@ export default function AdminGeneralSettingsPage({ onToast }) {
     }
   };
 
-  const handleDeleteUser = async (id) => {
-    if (window.confirm("Permanently remove this administrator account?")) {
-      try {
-        const res = await adminDeleteUser(id);
-        if (res.success) {
-          onToast("User removed", "success");
-          loadAll();
-        }
-      } catch (err) {
-        onToast(err.message, "error");
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this administrator account?")) return;
+    try {
+      const res = await adminDeleteUser(userId);
+      if (res.success) {
+        onToast("User account deleted successfully!", "success");
+        loadAll();
       }
+    } catch (err) {
+      onToast(err.message, "error");
     }
   };
 
-  const togglePermission = (perm) => {
-    setUserForm((prev) => {
-      const exists = prev.permissions.includes(perm);
-      return {
-        ...prev,
-        permissions: exists
-          ? prev.permissions.filter((p) => p !== perm)
-          : [...prev.permissions, perm],
-      };
-    });
+  // Third Party Plugins Registry (matching the screenshot exactly)
+  const pluginRegistry = [
+    {
+      id: "tawk",
+      name: "Tawk Chat",
+      subtitle: "Free Instant Messaging system",
+      icon: "🦜",
+      activeKey: "plugin_tawk_active",
+      fields: [
+        { key: "plugin_tawk_property_id", label: "Property ID", placeholder: "e.g. 6428c04e31ebfa0fe7f5xxxx" },
+        { key: "plugin_tawk_widget_id", label: "Widget ID", placeholder: "e.g. 1gttxxxxx" },
+      ],
+      description: "Direct real-time customer messaging widget shown at the bottom corner of your storefront.",
+    },
+    {
+      id: "recaptcha",
+      name: "Google reCaptcha",
+      subtitle: "reCAPTCHA protects your website from fraud and abuse without creating friction",
+      icon: "🛡️",
+      activeKey: "plugin_recaptcha_active",
+      fields: [
+        { key: "plugin_recaptcha_site_key", label: "Site Key (Public)", placeholder: "e.g. 6LdXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+        { key: "plugin_recaptcha_secret_key", label: "Secret Key (Private)", placeholder: "e.g. 6LdXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+      ],
+      description: "Google security service that verifies human interactions and protects checkout and inquiry forms.",
+    },
+    {
+      id: "analytics",
+      name: "Google Analytics",
+      subtitle: "Analytics will help you to collect data for your website",
+      icon: "📊",
+      activeKey: "plugin_google_analytics_active",
+      fields: [
+        { key: "plugin_google_analytics_id", label: "Measurement ID (GA4)", placeholder: "e.g. G-XXXXXXXXXX" },
+      ],
+      description: "Google Analytics 4 collects storefront visitor traffic, page views, and conversion metrics.",
+    },
+    {
+      id: "messenger",
+      name: "Facebook Messenger",
+      subtitle: "Messenger is a proprietary instant messaging app and platform developed by Meta",
+      icon: "💬",
+      activeKey: "plugin_facebook_messenger_active",
+      fields: [
+        { key: "plugin_facebook_page_id", label: "Facebook Page ID", placeholder: "e.g. 102938475610293" },
+        { key: "plugin_facebook_app_id", label: "Meta App ID (Optional)", placeholder: "e.g. 9876543210" },
+      ],
+      description: "Meta Messenger chat plugin connects customer inquiries directly to your Facebook Page inbox.",
+    },
+    {
+      id: "reloadly",
+      name: "Reloadly",
+      subtitle: "Payment APIs for Utility Payments Made Easy",
+      icon: "💳",
+      activeKey: "plugin_reloadly_active",
+      fields: [
+        { key: "plugin_reloadly_client_id", label: "Client ID", placeholder: "Enter Reloadly Client ID" },
+        { key: "plugin_reloadly_client_secret", label: "Client Secret", placeholder: "Enter Reloadly Client Secret" },
+      ],
+      description: "Automated billing and utility payment gateway integration.",
+    },
+    {
+      id: "tpaga",
+      name: "Tpaga",
+      subtitle: "Tpaga has hundreds of partners nationwide where you can pay your bills and credits",
+      icon: "🏦",
+      activeKey: "plugin_tpaga_active",
+      fields: [
+        { key: "plugin_tpaga_api_key", label: "API Key / Merchant Token", placeholder: "Enter Tpaga API Key" },
+      ],
+      description: "Digital mobile wallet and payment processing partner system.",
+    },
+    {
+      id: "twilio",
+      name: "Twilio SMS Gateway",
+      subtitle: "Automated transactional SMS gateway for customer orders, dispatches & OTP alerts",
+      icon: "📱",
+      activeKey: "plugin_twilio_sms_active",
+      fields: [
+        { key: "plugin_twilio_sid", label: "Account SID", placeholder: "e.g. ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+        { key: "plugin_twilio_token", label: "Auth Token", placeholder: "e.g. your_auth_token_here" },
+        { key: "plugin_twilio_from", label: "From Phone Number / Sender ID", placeholder: "e.g. +16043168138 or AMIDA" },
+      ],
+      description: "Sends automated SMS messages to customers when orders are confirmed or dispatched.",
+    },
+    {
+      id: "whatsapp",
+      name: "WhatsApp Floating Chat",
+      subtitle: "Floating customer support widget for direct WhatsApp inquiries and instant orders",
+      icon: "🟢",
+      activeKey: "plugin_whatsapp_active",
+      fields: [
+        { key: "plugin_whatsapp_number", label: "WhatsApp Phone Number (with Country Code)", placeholder: "+16043168138" },
+        { key: "plugin_whatsapp_message", label: "Default Greeting Message", placeholder: "Hello AMIDA, I would like to inquire about products." },
+      ],
+      description: "Displays a floating WhatsApp icon on storefront pages for direct chat with your sales team.",
+    },
+    {
+      id: "custom_script",
+      name: "Custom Scripts & Webhooks",
+      subtitle: "Inject custom header, body, or footer scripts for advertising tags and tracking",
+      icon: "💻",
+      activeKey: "plugin_custom_script_active",
+      fields: [
+        { key: "plugin_header_script", label: "Header Scripts (<head>)", type: "textarea", placeholder: "<script>/* Custom header script */</script>" },
+        { key: "plugin_footer_script", label: "Footer Scripts (before </body>)", type: "textarea", placeholder: "<script>/* Custom footer script */</script>" },
+      ],
+      description: "Allows raw script injection for custom tracking pixels, hotjar, or third-party webhooks.",
+    },
+  ];
+
+  // Quick toggle status inside plugin modal or direct row
+  const togglePluginStatus = (activeKey) => {
+    const newVal = settings[activeKey] === "1" ? "0" : "1";
+    setSettings((prev) => ({ ...prev, [activeKey]: newVal }));
   };
 
+  const getPageHeaderTitle = () => {
+    const titles = {
+      site: "Site Settings",
+      email: "Email Settings",
+      seo: "SEO Meta Settings",
+      language: "Language Settings",
+      page: "Page Settings",
+      plugin: "Plugin Settings",
+      sms: "SMS Gateway Settings",
+      notification: "Notification Settings",
+    };
+    return titles[activeTab] || "System Settings";
+  };
+
+  if (loading) {
+    return (
+      <div className="adm-loading-state">
+        <div className="adm-spinner" />
+        <p>Loading enterprise configurations...</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className="adm-page-header">
-        <div className="adm-page-title">
-          <h1>Enterprise Settings &amp; Configuration</h1>
-          <p>
-            Multi-User Roles, SMTP Mail Gateway, Global Preferences &amp; Google SEO Optimization.
-          </p>
-        </div>
+    <div className="adm-settings-container">
+      {/* Page Title matching reference image */}
+      <div className="adm-page-title-row">
+        <h1 className="adm-page-main-heading">{getPageHeaderTitle()}</h1>
       </div>
 
-      {/* Tabs */}
-      <div className="adm-tabs">
+      {/* Horizontal Settings Tabs Bar matching reference image */}
+      <div className="adm-settings-pill-nav">
         <button
           type="button"
-          className={`adm-tab ${activeTab === "general" ? "active" : ""}`}
-          onClick={() => setActiveTab("general")}
+          className={`adm-nav-pill-btn ${activeTab === "site" ? "active" : ""}`}
+          onClick={() => setActiveTab("site")}
         >
-          🏢 General Information
+          <span className="adm-pill-icon">⚙️</span>
+          <span>Site Settings</span>
         </button>
+
         <button
           type="button"
-          className={`adm-tab ${activeTab === "users" ? "active" : ""}`}
-          onClick={() => setActiveTab("users")}
+          className={`adm-nav-pill-btn ${activeTab === "email" ? "active" : ""}`}
+          onClick={() => setActiveTab("email")}
         >
-          👥 Multi-User &amp; Permissions ({users.length})
+          <span className="adm-pill-icon">✉️</span>
+          <span>Email</span>
         </button>
+
         <button
           type="button"
-          className={`adm-tab ${activeTab === "smtp" ? "active" : ""}`}
-          onClick={() => setActiveTab("smtp")}
-        >
-          ✉️ SMTP Server &amp; Autoresponder
-        </button>
-        <button
-          type="button"
-          className={`adm-tab ${activeTab === "seo" ? "active" : ""}`}
+          className={`adm-nav-pill-btn ${activeTab === "seo" ? "active" : ""}`}
           onClick={() => setActiveTab("seo")}
         >
-          🌐 SEO, GTM &amp; Marketing
+          <span className="adm-pill-icon">🔍</span>
+          <span>SEO Meta</span>
+        </button>
+
+        <button
+          type="button"
+          className={`adm-nav-pill-btn ${activeTab === "language" ? "active" : ""}`}
+          onClick={() => setActiveTab("language")}
+        >
+          <span className="adm-pill-icon">文A</span>
+          <span>Language</span>
+        </button>
+
+        <button
+          type="button"
+          className={`adm-nav-pill-btn ${activeTab === "page" ? "active" : ""}`}
+          onClick={() => setActiveTab("page")}
+        >
+          <span className="adm-pill-icon">📄</span>
+          <span>Page</span>
+        </button>
+
+        {/* Plugin Tab: Active in screenshot with deep purple highlight */}
+        <button
+          type="button"
+          className={`adm-nav-pill-btn ${activeTab === "plugin" ? "active" : ""}`}
+          onClick={() => setActiveTab("plugin")}
+        >
+          <span className="adm-pill-icon">🔌</span>
+          <span>Plugin</span>
+        </button>
+
+        <button
+          type="button"
+          className={`adm-nav-pill-btn ${activeTab === "sms" ? "active" : ""}`}
+          onClick={() => setActiveTab("sms")}
+        >
+          <span className="adm-pill-icon">💬</span>
+          <span>SMS</span>
+        </button>
+
+        {/* Notification Tab without sound tune */}
+        <button
+          type="button"
+          className={`adm-nav-pill-btn ${activeTab === "notification" ? "active" : ""}`}
+          onClick={() => setActiveTab("notification")}
+        >
+          <span className="adm-pill-icon">🔔</span>
+          <span>Notification</span>
         </button>
       </div>
 
-      {/* TAB 1: General Info */}
-      {activeTab === "general" && (
-        <div className="adm-card" style={{ maxWidth: "800px" }}>
-          <div className="adm-card-header">
-            <h2 className="adm-card-title">Global Storefront Parameters</h2>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-            <div className="adm-form-group">
-              <label className="adm-label">Company / Legal Store Name</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.site_name}
-                onChange={(e) => setSettings({ ...settings, site_name: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Primary Currency</label>
-              <select
-                className="adm-select"
-                value={settings.currency}
-                onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-              >
-                <option value="USD">USD ($) - US Dollar</option>
-                <option value="EUR">EUR (€) - Euro</option>
-                <option value="GBP">GBP (£) - British Pound</option>
-                <option value="BDT">BDT (৳) - Bangladeshi Taka</option>
-              </select>
-            </div>
-
-            <div className="adm-form-group" style={{ gridColumn: "1 / -1" }}>
-              <label className="adm-label">Global Tagline / Industry Classification</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.site_tagline}
-                onChange={(e) => setSettings({ ...settings, site_tagline: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Executive Leadership / CEO Name</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.ceo_name || ""}
-                onChange={(e) => setSettings({ ...settings, ceo_name: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Executive Title / Designation</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.ceo_title || ""}
-                onChange={(e) => setSettings({ ...settings, ceo_title: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group" style={{ gridColumn: "1 / -1" }}>
-              <label className="adm-label">Corporate Office Headquarters Address</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.contact_address || ""}
-                onChange={(e) => setSettings({ ...settings, contact_address: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Official Hotline Telephone</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.contact_phone || ""}
-                onChange={(e) => setSettings({ ...settings, contact_phone: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Official Business Email</label>
-              <input
-                type="email"
-                className="adm-input"
-                value={settings.contact_email || ""}
-                onChange={(e) => setSettings({ ...settings, contact_email: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Server Timezone</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.timezone}
-                onChange={(e) => setSettings({ ...settings, timezone: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Canonical Store URL</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={settings.site_url}
-                onChange={(e) => setSettings({ ...settings, site_url: e.target.value })}
-              />
+      {/* ========================================================================= */}
+      {/* TAB 1: THIRD PARTY SYSTEM PLUGINS (Exact visual match with screenshot)  */}
+      {/* ========================================================================= */}
+      {activeTab === "plugin" && (
+        <div className="adm-plugins-card">
+          <div className="adm-plugins-card-header">
+            <h2 className="adm-plugins-card-title">Third Party System Plugins</h2>
+            <div className="adm-plugins-info-banner">
+              <span className="adm-info-icon">⚠️</span>
+              <span>You can Enable or Disable any of the plugin</span>
             </div>
           </div>
 
-          <div style={{ marginTop: "16px" }}>
-            <button
-              type="button"
-              className="adm-btn adm-btn-primary"
-              onClick={() => handleSaveSettings("general")}
-            >
-              Save General Settings
-            </button>
+          <div className="adm-plugins-list">
+            {pluginRegistry.map((p) => {
+              const isActivated = settings[p.activeKey] === "1";
+              return (
+                <div key={p.id} className="adm-plugin-row">
+                  <div className="adm-plugin-left">
+                    <div className="adm-plugin-icon-box">
+                      <span className="adm-plugin-symbol">{p.icon}</span>
+                    </div>
+                    <div className="adm-plugin-details">
+                      <h3 className="adm-plugin-name">{p.name}</h3>
+                      <p className="adm-plugin-subtitle">{p.subtitle}</p>
+                    </div>
+                  </div>
+
+                  <div className="adm-plugin-right">
+                    {/* Status Badge */}
+                    <span className={`adm-plugin-badge ${isActivated ? "activated" : "deactivated"}`}>
+                      {isActivated ? "Activated" : "DeActivated"}
+                    </span>
+
+                    {/* Circular Purple Configure Button */}
+                    <button
+                      type="button"
+                      className="adm-btn-configure-purple"
+                      onClick={() => setActivePluginModal(p)}
+                      title={`Configure ${p.name}`}
+                    >
+                      🎛️
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* TAB 2: Multi-User & Permissions */}
-      {activeTab === "users" && (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <p style={{ color: "var(--adm-text-muted)", fontSize: "13.5px" }}>
-              Manage administrative staff, sales engineers, and role-based access permissions.
-            </p>
+      {/* ========================================================================= */}
+      {/* TAB 2: SITE SETTINGS (Company, Order Pause, Delivery Charges, Users)      */}
+      {/* ========================================================================= */}
+      {activeTab === "site" && (
+        <div className="adm-site-settings-view">
+          {/* Sub Navigation */}
+          <div className="adm-subtabs-row">
             <button
               type="button"
-              className="adm-btn adm-btn-primary"
-              onClick={handleOpenCreateUser}
+              className={`adm-subtab-btn ${siteSubTab === "company" ? "active" : ""}`}
+              onClick={() => setSiteSubTab("company")}
             >
-              + Add New Administrator
+              🏢 Company Information
+            </button>
+            <button
+              type="button"
+              className={`adm-subtab-btn ${siteSubTab === "pause" ? "active" : ""}`}
+              onClick={() => setSiteSubTab("pause")}
+            >
+              ⏸️ Order Pause System {settings.order_pause_enabled === "1" && "🔴"}
+            </button>
+            <button
+              type="button"
+              className={`adm-subtab-btn ${siteSubTab === "delivery" ? "active" : ""}`}
+              onClick={() => setSiteSubTab("delivery")}
+            >
+              🚚 Delivery &amp; Shipping Rates
+            </button>
+            <button
+              type="button"
+              className={`adm-subtab-btn ${siteSubTab === "users" ? "active" : ""}`}
+              onClick={() => setSiteSubTab("users")}
+            >
+              👥 Admin Team ({users.length})
             </button>
           </div>
 
-          <div className="adm-card" style={{ padding: 0, overflow: "hidden" }}>
-            <div className="adm-table-container">
-              <table className="adm-table">
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Last Login</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id}>
-                      <td style={{ fontWeight: 600 }}>{u.name}</td>
-                      <td>
-                        <code style={{ color: "var(--adm-accent-cyan)" }}>{u.username || "-"}</code>
-                      </td>
-                      <td>{u.email}</td>
-                      <td>
-                        <span
-                          className={`adm-badge ${
-                            u.role === "super_admin"
-                              ? "adm-badge-rose"
-                              : u.role === "admin"
-                              ? "adm-badge-blue"
-                              : "adm-badge-green"
-                          }`}
-                        >
-                          {u.role.toUpperCase()}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`adm-badge ${u.is_active ? "adm-badge-green" : "adm-badge-gray"}`}
-                        >
-                          {u.is_active ? "Active" : "Suspended"}
-                        </span>
-                      </td>
-                      <td style={{ fontSize: "12px", color: "var(--adm-text-subtle)" }}>
-                        {u.last_login_at
-                          ? new Date(u.last_login_at).toLocaleString()
-                          : "Never logged in"}
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        <div style={{ display: "inline-flex", gap: "6px" }}>
-                          <button
-                            type="button"
-                            className="adm-btn adm-btn-outline adm-btn-sm"
-                            onClick={() => handleOpenEditUser(u)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="adm-btn adm-btn-danger adm-btn-sm"
-                            onClick={() => handleDeleteUser(u.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: SMTP Server Configuration */}
-      {activeTab === "smtp" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "24px" }}>
-          {/* SMTP Server Form */}
-          <div className="adm-card">
-            <div className="adm-card-header">
-              <h2 className="adm-card-title">
-                <span>✉️</span> SMTP Outgoing Mail Gateway
-              </h2>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-              <div className="adm-form-group">
-                <label className="adm-label">SMTP Host (Server) *</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  placeholder="smtp.gmail.com or mail.yourdomain.com"
-                  value={settings.smtp_host}
-                  onChange={(e) => setSettings({ ...settings, smtp_host: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Port *</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  placeholder="587 (TLS) or 465 (SSL)"
-                  value={settings.smtp_port}
-                  onChange={(e) => setSettings({ ...settings, smtp_port: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Encryption Protocol</label>
-                <select
-                  className="adm-select"
-                  value={settings.smtp_encryption}
-                  onChange={(e) => setSettings({ ...settings, smtp_encryption: e.target.value })}
-                >
-                  <option value="tls">TLS (Recommended - Port 587)</option>
-                  <option value="ssl">SSL (Port 465)</option>
-                  <option value="none">None / Open (Port 25)</option>
-                </select>
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">SMTP Username / Email *</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  placeholder="your-email@gmail.com"
-                  value={settings.smtp_username}
-                  onChange={(e) => setSettings({ ...settings, smtp_username: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group" style={{ gridColumn: "1 / -1" }}>
-                <label className="adm-label">SMTP Password / Google App Password *</label>
-                <input
-                  type="password"
-                  className="adm-input"
-                  placeholder="••••••••••••••••"
-                  value={settings.smtp_password}
-                  onChange={(e) => setSettings({ ...settings, smtp_password: e.target.value })}
-                />
-                <div className="adm-hint">
-                  For Gmail, generate an <strong>App Password</strong> in your Google Account security settings.
-                </div>
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Sender &quot;From&quot; Name</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  value={settings.smtp_from_name}
-                  onChange={(e) => setSettings({ ...settings, smtp_from_name: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Sender &quot;From&quot; Email</label>
-                <input
-                  type="email"
-                  className="adm-input"
-                  value={settings.smtp_from_email}
-                  onChange={(e) => setSettings({ ...settings, smtp_from_email: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group" style={{ gridColumn: "1 / -1" }}>
-                <label className="adm-label">Admin Alert Recipient Email</label>
-                <input
-                  type="email"
-                  className="adm-input"
-                  placeholder="admin@acme.com"
-                  value={settings.admin_notify_email}
-                  onChange={(e) => setSettings({ ...settings, admin_notify_email: e.target.value })}
-                />
-                <div className="adm-hint">
-                  Instant notification alerts will be dispatched here whenever a client submits an RFQ or chat lead.
-                </div>
-              </div>
-            </div>
-
-            {/* Autoresponder Section */}
-            <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--adm-border)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-                <h3 style={{ fontSize: "15px", color: "#fff", fontWeight: 700 }}>
-                  Client Instant Welcome Autoresponder
-                </h3>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", color: "#fff", fontSize: "13px" }}>
-                  <input
-                    type="checkbox"
-                    checked={settings.autoresponder_enabled === "1"}
-                    onChange={(e) =>
-                      setSettings({ ...settings, autoresponder_enabled: e.target.checked ? "1" : "0" })
-                    }
-                  />
-                  <span>Enable Autoresponder</span>
-                </label>
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Autoresponder Email Subject</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  value={settings.autoresponder_subject}
-                  onChange={(e) => setSettings({ ...settings, autoresponder_subject: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Autoresponder Body Template</label>
-                <textarea
-                  className="adm-textarea"
-                  rows={5}
-                  value={settings.autoresponder_body}
-                  onChange={(e) => setSettings({ ...settings, autoresponder_body: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginTop: "16px" }}>
-              <button
-                type="button"
-                className="adm-btn adm-btn-primary"
-                onClick={() => handleSaveSettings("smtp")}
-              >
-                Save SMTP Configuration
-              </button>
-            </div>
-          </div>
-
-          {/* Test SMTP Connection Card */}
-          <div>
+          {/* Sub Tab: Company Profile */}
+          {siteSubTab === "company" && (
             <div className="adm-card">
               <div className="adm-card-header">
-                <h2 className="adm-card-title">
-                  <span>⚡</span> Live SMTP Test Diagnostic
-                </h2>
+                <div>
+                  <h3 className="adm-card-title">Company Profile &amp; Contact Details</h3>
+                  <p className="adm-card-subtitle">Displayed across invoices, vouchers, header, and storefront footer</p>
+                </div>
+                <button
+                  type="button"
+                  className="adm-btn-primary"
+                  onClick={() => handleSaveSettings("general")}
+                >
+                  Save Changes
+                </button>
               </div>
 
-              <p style={{ color: "var(--adm-text-muted)", fontSize: "13px", marginBottom: "16px", lineHeight: 1.5 }}>
-                Send a real test email to verify authentication handshake, ports, and TLS handshake with your mail server.
-              </p>
-
-              <form onSubmit={handleRunSmtpTest}>
+              <div className="adm-form-grid">
                 <div className="adm-form-group">
-                  <label className="adm-label">Recipient Test Email Address</label>
+                  <label>Company Legal Name *</label>
                   <input
-                    type="email"
-                    className="adm-input"
-                    placeholder="your-personal@email.com"
-                    value={testEmail}
-                    onChange={(e) => setTestEmail(e.target.value)}
-                    required
+                    type="text"
+                    value={settings.site_name || ""}
+                    onChange={(e) => setSettings({ ...settings, site_name: e.target.value })}
                   />
                 </div>
+                <div className="adm-form-group">
+                  <label>Tagline / Motto</label>
+                  <input
+                    type="text"
+                    value={settings.site_tagline || ""}
+                    onChange={(e) => setSettings({ ...settings, site_tagline: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>CEO / Managing Director Name</label>
+                  <input
+                    type="text"
+                    value={settings.ceo_name || ""}
+                    onChange={(e) => setSettings({ ...settings, ceo_name: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>CEO Title / Designation</label>
+                  <input
+                    type="text"
+                    value={settings.ceo_title || ""}
+                    onChange={(e) => setSettings({ ...settings, ceo_title: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Official Contact Phone</label>
+                  <input
+                    type="text"
+                    value={settings.contact_phone || ""}
+                    onChange={(e) => setSettings({ ...settings, contact_phone: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Customer Support Email</label>
+                  <input
+                    type="email"
+                    value={settings.contact_email || ""}
+                    onChange={(e) => setSettings({ ...settings, contact_email: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group full-width">
+                  <label>Corporate Head Office Address</label>
+                  <textarea
+                    rows={2}
+                    value={settings.contact_address || ""}
+                    onChange={(e) => setSettings({ ...settings, contact_address: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
+          {/* Sub Tab: Order Pause System */}
+          {siteSubTab === "pause" && (
+            <div className="adm-card">
+              <div className="adm-card-header">
+                <div>
+                  <h3 className="adm-card-title">Order Push &amp; Temporary Pause System</h3>
+                  <p className="adm-card-subtitle">
+                    Temporarily stop incoming customer orders with a timer countdown and welcoming notice message.
+                  </p>
+                </div>
                 <button
-                  type="submit"
-                  className="adm-btn adm-btn-success"
-                  style={{ width: "100%", padding: "10px" }}
-                  disabled={testingSmtp}
+                  type="button"
+                  className="adm-btn-primary"
+                  onClick={() => handleSaveSettings("orders", "Order pause system settings updated!")}
                 >
-                  {testingSmtp ? "Testing SMTP Handshake..." : "🚀 Send Test Email Now"}
+                  Save Pause Settings
                 </button>
-              </form>
+              </div>
 
-              {testResult && (
-                <div
-                  style={{
-                    marginTop: "16px",
-                    padding: "12px",
-                    borderRadius: "6px",
-                    background: testResult.success ? "rgba(16, 185, 129, 0.15)" : "rgba(244, 63, 94, 0.15)",
-                    border: `1px solid ${testResult.success ? "#10b981" : "#f43f5e"}`,
-                    color: testResult.success ? "#6ee7b7" : "#fda4af",
-                    fontSize: "13px",
+              <div className="adm-pause-config-box">
+                <div className="adm-pause-switch-row">
+                  <div>
+                    <strong>Order Pause Status:</strong>
+                    <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "13px" }}>
+                      When enabled, checkout and "Confirm Order" buttons will display the welcoming maintenance notice.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className={`adm-status-toggle-btn ${settings.order_pause_enabled === "1" ? "active" : ""}`}
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        order_pause_enabled: settings.order_pause_enabled === "1" ? "0" : "1",
+                      })
+                    }
+                  >
+                    {settings.order_pause_enabled === "1" ? "PAUSED (Orders Blocked)" : "ACTIVE (Orders Allowed)"}
+                  </button>
+                </div>
+
+                <div className="adm-form-group" style={{ marginTop: "16px" }}>
+                  <label>Pause Until Specific Date &amp; Time (Countdown Timer)</label>
+                  <input
+                    type="datetime-local"
+                    value={settings.order_pause_until || ""}
+                    onChange={(e) => setSettings({ ...settings, order_pause_until: e.target.value })}
+                  />
+                  <small style={{ color: "#64748b", marginTop: "4px", display: "block" }}>
+                    Leave blank to pause indefinitely until manually turned back on.
+                  </small>
+                </div>
+
+                <div className="adm-form-group" style={{ marginTop: "16px" }}>
+                  <label>Customer Welcome &amp; Maintenance Notice Message</label>
+                  <textarea
+                    rows={4}
+                    value={settings.order_pause_message || ""}
+                    onChange={(e) => setSettings({ ...settings, order_pause_message: e.target.value })}
+                    placeholder="Enter the welcoming message explaining why orders are paused and when service will resume..."
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub Tab: Delivery & Shipping Rates */}
+          {siteSubTab === "delivery" && (
+            <div className="adm-card">
+              <div className="adm-card-header">
+                <div>
+                  <h3 className="adm-card-title">Delivery Charges &amp; Free Shipping Rules</h3>
+                  <p className="adm-card-subtitle">Configure flat delivery fees applied at checkout and free shipping threshold</p>
+                </div>
+                <button
+                  type="button"
+                  className="adm-btn-primary"
+                  onClick={() => handleSaveSettings("shipping", "Shipping charges updated successfully!")}
+                >
+                  Save Delivery Rates
+                </button>
+              </div>
+
+              <div className="adm-form-grid">
+                <div className="adm-form-group">
+                  <label>Inside City Delivery Charge ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={settings.delivery_charge_inside || "60"}
+                    onChange={(e) => setSettings({ ...settings, delivery_charge_inside: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Outside City / Nationwide Delivery Charge ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={settings.delivery_charge_outside || "120"}
+                    onChange={(e) => setSettings({ ...settings, delivery_charge_outside: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Free Shipping Minimum Order Amount ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={settings.free_shipping_threshold || "5000"}
+                    onChange={(e) => setSettings({ ...settings, free_shipping_threshold: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Enable Free Shipping Rule</label>
+                  <select
+                    value={settings.free_shipping_enabled || "1"}
+                    onChange={(e) => setSettings({ ...settings, free_shipping_enabled: e.target.value })}
+                  >
+                    <option value="1">Enabled (Free delivery over threshold)</option>
+                    <option value="0">Disabled (Always charge shipping)</option>
+                  </select>
+                </div>
+                <div className="adm-form-group full-width">
+                  <label>Storefront Shipping Policy Note</label>
+                  <textarea
+                    rows={2}
+                    value={settings.shipping_policy || ""}
+                    onChange={(e) => setSettings({ ...settings, shipping_policy: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sub Tab: Admin Users Management */}
+          {siteSubTab === "users" && (
+            <div className="adm-card">
+              <div className="adm-card-header">
+                <div>
+                  <h3 className="adm-card-title">Authorized Admin Users</h3>
+                  <p className="adm-card-subtitle">Manage administrative team members and access roles</p>
+                </div>
+                <button
+                  type="button"
+                  className="adm-btn-primary"
+                  onClick={() => {
+                    setCurrentUser(null);
+                    setUserForm({
+                      name: "",
+                      username: "",
+                      email: "",
+                      password: "",
+                      role: "admin",
+                      is_active: true,
+                      permissions: ["products.manage", "inquiries.manage"],
+                    });
+                    setUserModal("create");
                   }}
                 >
-                  <strong>{testResult.success ? "Success!" : "Failed!"}</strong>
-                  <div style={{ marginTop: "4px" }}>{testResult.message}</div>
-                </div>
-              )}
+                  + Add New Admin User
+                </button>
+              </div>
+
+              <div className="adm-table-container">
+                <table className="adm-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr key={u.id}>
+                        <td>
+                          <strong>{u.name}</strong>
+                        </td>
+                        <td>{u.username}</td>
+                        <td>{u.email}</td>
+                        <td>
+                          <span className="adm-badge adm-badge-blue">{u.role}</span>
+                        </td>
+                        <td>
+                          <span className={`adm-badge ${u.is_active ? "adm-badge-green" : "adm-badge-red"}`}>
+                            {u.is_active ? "Active" : "Disabled"}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ display: "flex", gap: "6px" }}>
+                            <button
+                              type="button"
+                              className="adm-btn-edit-sm"
+                              onClick={() => {
+                                setCurrentUser(u);
+                                setUserForm({
+                                  name: u.name,
+                                  username: u.username,
+                                  email: u.email,
+                                  password: "",
+                                  role: u.role,
+                                  is_active: !!u.is_active,
+                                  permissions: u.permissions || [],
+                                });
+                                setUserModal("edit");
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="adm-btn-delete-sm"
+                              onClick={() => handleDeleteUser(u.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: EMAIL (SMTP) SETTINGS                                              */}
+      {/* ========================================================================= */}
+      {activeTab === "email" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">SMTP Mail Server &amp; Gateway Configuration</h3>
+              <p className="adm-card-subtitle">Deliver automated order vouchers, inquiry replies, and customer notices</p>
+            </div>
+            <button
+              type="button"
+              className="adm-btn-primary"
+              onClick={() => handleSaveSettings("smtp", "SMTP Mail settings saved successfully!")}
+            >
+              Save SMTP Settings
+            </button>
+          </div>
+
+          <div className="adm-form-grid">
+            <div className="adm-form-group">
+              <label>SMTP Host</label>
+              <input
+                type="text"
+                value={settings.smtp_host || ""}
+                onChange={(e) => setSettings({ ...settings, smtp_host: e.target.value })}
+                placeholder="smtp.gmail.com"
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>SMTP Port</label>
+              <input
+                type="text"
+                value={settings.smtp_port || "587"}
+                onChange={(e) => setSettings({ ...settings, smtp_port: e.target.value })}
+                placeholder="587"
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Encryption</label>
+              <select
+                value={settings.smtp_encryption || "tls"}
+                onChange={(e) => setSettings({ ...settings, smtp_encryption: e.target.value })}
+              >
+                <option value="tls">TLS</option>
+                <option value="ssl">SSL</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+            <div className="adm-form-group">
+              <label>SMTP Username / Email</label>
+              <input
+                type="text"
+                value={settings.smtp_username || ""}
+                onChange={(e) => setSettings({ ...settings, smtp_username: e.target.value })}
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>SMTP Password / App Password</label>
+              <input
+                type="password"
+                value={settings.smtp_password || ""}
+                onChange={(e) => setSettings({ ...settings, smtp_password: e.target.value })}
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Sender From Name</label>
+              <input
+                type="text"
+                value={settings.smtp_from_name || ""}
+                onChange={(e) => setSettings({ ...settings, smtp_from_name: e.target.value })}
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Sender From Email</label>
+              <input
+                type="email"
+                value={settings.smtp_from_email || ""}
+                onChange={(e) => setSettings({ ...settings, smtp_from_email: e.target.value })}
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Admin Notification Recipient Email</label>
+              <input
+                type="email"
+                value={settings.admin_notify_email || ""}
+                onChange={(e) => setSettings({ ...settings, admin_notify_email: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Test Email Section */}
+          <div className="adm-test-email-box" style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid #e2e8f0" }}>
+            <h4 style={{ margin: "0 0 8px", color: "#1e293b" }}>Send Test Email</h4>
+            <div style={{ display: "flex", gap: "10px", maxWidth: "600px" }}>
+              <input
+                type="email"
+                placeholder="Enter recipient email (e.g. your email)"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                className="adm-btn-secondary"
+                disabled={testingSmtp}
+                onClick={handleTestSmtp}
+              >
+                {testingSmtp ? "Sending..." : "Send Test"}
+              </button>
+            </div>
+            {testResult && (
+              <div
+                style={{
+                  marginTop: "12px",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  background: testResult.success ? "#dcfce7" : "#fee2e2",
+                  color: testResult.success ? "#15803d" : "#b91c1c",
+                }}
+              >
+                {testResult.message}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: SEO META SETTINGS                                                  */}
+      {/* ========================================================================= */}
+      {activeTab === "seo" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">SEO Meta Tags &amp; Search Engine Indexing</h3>
+              <p className="adm-card-subtitle">Boost Google search rankings, meta descriptions, and sitemap indexing</p>
+            </div>
+            <button type="button" className="adm-btn-primary" onClick={handleSaveSeo}>
+              Save SEO Settings
+            </button>
+          </div>
+
+          <div className="adm-form-grid">
+            <div className="adm-form-group full-width">
+              <label>Default Page Meta Title</label>
+              <input
+                type="text"
+                value={seo.meta_title || ""}
+                onChange={(e) => setSeo({ ...seo, meta_title: e.target.value })}
+                placeholder="AMIDA Office Supplies Limited - Industrial Toner & Stationery"
+              />
+            </div>
+            <div className="adm-form-group full-width">
+              <label>Meta Description</label>
+              <textarea
+                rows={3}
+                value={seo.meta_description || ""}
+                onChange={(e) => setSeo({ ...seo, meta_description: e.target.value })}
+                placeholder="Leading supplier of office equipment, toners, copiers, paper, and school supplies..."
+              />
+            </div>
+            <div className="adm-form-group full-width">
+              <label>Meta Keywords (Comma separated)</label>
+              <input
+                type="text"
+                value={seo.meta_keywords || ""}
+                onChange={(e) => setSeo({ ...seo, meta_keywords: e.target.value })}
+                placeholder="toner, copier, paper, stationery, office supplies, canada"
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Google Tag Manager Container ID</label>
+              <input
+                type="text"
+                value={seo.google_tag_manager_id || ""}
+                onChange={(e) => setSeo({ ...seo, google_tag_manager_id: e.target.value })}
+                placeholder="GTM-XXXXXXX"
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Google Search Console Verification Meta Code</label>
+              <input
+                type="text"
+                value={seo.google_search_console_code || ""}
+                onChange={(e) => setSeo({ ...seo, google_search_console_code: e.target.value })}
+                placeholder="google-site-verification=..."
+              />
+            </div>
+            <div className="adm-form-group full-width">
+              <label>Robots.txt Content</label>
+              <textarea
+                rows={3}
+                value={seo.robots_txt || ""}
+                onChange={(e) => setSeo({ ...seo, robots_txt: e.target.value })}
+                placeholder="User-agent: *&#10;Disallow: /myadmin"
+              />
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 4: SEO, GTM & Marketing */}
-      {activeTab === "seo" && (
-        <form onSubmit={handleSaveSeo} style={{ maxWidth: "860px" }}>
-          <div className="adm-card">
-            <div className="adm-card-header">
-              <h2 className="adm-card-title">
-                <span>🔍</span> Global Search Engine Optimization (SEO)
-              </h2>
+      {/* ========================================================================= */}
+      {/* TAB 5: LANGUAGE SETTINGS                                                  */}
+      {/* ========================================================================= */}
+      {activeTab === "language" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">Language &amp; Internationalization</h3>
+              <p className="adm-card-subtitle">Set default platform language and configure international locale switcher</p>
             </div>
-
-            <div className="adm-form-group">
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <label className="adm-label">Global Meta Title (Browser &amp; Google Snippet)</label>
-                <span style={{ fontSize: "11px", color: "var(--adm-text-subtle)" }}>
-                  {seo.meta_title.length} / 65 recommended
-                </span>
-              </div>
-              <input
-                type="text"
-                className="adm-input"
-                value={seo.meta_title}
-                onChange={(e) => setSeo({ ...seo, meta_title: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <label className="adm-label">Meta Description</label>
-                <span style={{ fontSize: "11px", color: "var(--adm-text-subtle)" }}>
-                  {seo.meta_description.length} / 160 recommended
-                </span>
-              </div>
-              <textarea
-                className="adm-textarea"
-                rows={3}
-                value={seo.meta_description}
-                onChange={(e) => setSeo({ ...seo, meta_description: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Target Keywords (Comma Separated)</label>
-              <input
-                type="text"
-                className="adm-input"
-                value={seo.meta_keywords}
-                onChange={(e) => setSeo({ ...seo, meta_keywords: e.target.value })}
-              />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-              <div className="adm-form-group">
-                <label className="adm-label">Google Tag Manager Container ID</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  placeholder="GTM-XXXXXXX"
-                  value={seo.google_tag_manager_id}
-                  onChange={(e) => setSeo({ ...seo, google_tag_manager_id: e.target.value })}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Google Analytics 4 (GA4) ID</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  placeholder="G-XXXXXXXXXX"
-                  value={seo.google_analytics_id}
-                  onChange={(e) => setSeo({ ...seo, google_analytics_id: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Google Search Console Verification Tag / Code</label>
-              <input
-                type="text"
-                className="adm-input"
-                placeholder="google-site-verification=xxxx..."
-                value={seo.google_search_console_code}
-                onChange={(e) => setSeo({ ...seo, google_search_console_code: e.target.value })}
-              />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Robots.txt Content</label>
-              <textarea
-                className="adm-textarea"
-                rows={4}
-                style={{ fontFamily: "monospace", fontSize: "12px" }}
-                value={seo.robots_txt}
-                onChange={(e) => setSeo({ ...seo, robots_txt: e.target.value })}
-              />
-            </div>
-
-            <div
-              style={{
-                background: "rgba(59, 130, 246, 0.08)",
-                border: "1px solid rgba(59, 130, 246, 0.25)",
-                borderRadius: "6px",
-                padding: "14px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginTop: "16px",
-              }}
+            <button
+              type="button"
+              className="adm-btn-primary"
+              onClick={() => handleSaveSettings("language", "Language preferences updated!")}
             >
+              Save Language Settings
+            </button>
+          </div>
+
+          <div className="adm-form-grid">
+            <div className="adm-form-group">
+              <label>System Default Language</label>
+              <select
+                value={settings.default_language || "English"}
+                onChange={(e) => setSettings({ ...settings, default_language: e.target.value })}
+              >
+                <option value="English">English (United States / Canada)</option>
+                <option value="English (UK)">English (United Kingdom)</option>
+                <option value="French">French (Français)</option>
+              </select>
+            </div>
+            <div className="adm-form-group">
+              <label>Text Layout Direction</label>
+              <select
+                value={settings.rtl_direction || "0"}
+                onChange={(e) => setSettings({ ...settings, rtl_direction: e.target.value })}
+              >
+                <option value="0">LTR (Left to Right - Standard)</option>
+                <option value="1">RTL (Right to Left - Arabic / Hebrew)</option>
+              </select>
+            </div>
+            <div className="adm-form-group full-width">
+              <label>Active Languages Enabled for Storefront Customers</label>
+              <input
+                type="text"
+                value={settings.available_languages || "English, French"}
+                onChange={(e) => setSettings({ ...settings, available_languages: e.target.value })}
+              />
+              <small style={{ color: "#64748b", marginTop: "4px", display: "block" }}>
+                Comma separated list of languages shown in the top header language selector dropdown.
+              </small>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 6: PAGE SETTINGS (Static Storefront Pages)                            */}
+      {/* ========================================================================= */}
+      {activeTab === "page" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">Static Content &amp; Policy Pages</h3>
+              <p className="adm-card-subtitle">Manage pages linked in header and footer (About Us, Privacy, Terms, Return Policy)</p>
+            </div>
+            <button
+              type="button"
+              className="adm-btn-primary"
+              onClick={() => handleSaveSettings("pages", "Static pages content saved successfully!")}
+            >
+              Save Pages
+            </button>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="adm-form-group full-width">
+              <label>About Us Page Title</label>
+              <input
+                type="text"
+                value={settings.page_about_title || ""}
+                onChange={(e) => setSettings({ ...settings, page_about_title: e.target.value })}
+              />
+              <label style={{ marginTop: "8px" }}>About Us Page Content</label>
+              <textarea
+                rows={3}
+                value={settings.page_about_content || ""}
+                onChange={(e) => setSettings({ ...settings, page_about_content: e.target.value })}
+              />
+            </div>
+
+            <div className="adm-form-group full-width">
+              <label>Privacy Policy Page Title</label>
+              <input
+                type="text"
+                value={settings.page_privacy_title || ""}
+                onChange={(e) => setSettings({ ...settings, page_privacy_title: e.target.value })}
+              />
+              <label style={{ marginTop: "8px" }}>Privacy Policy Page Content</label>
+              <textarea
+                rows={3}
+                value={settings.page_privacy_content || ""}
+                onChange={(e) => setSettings({ ...settings, page_privacy_content: e.target.value })}
+              />
+            </div>
+
+            <div className="adm-form-group full-width">
+              <label>Terms &amp; Conditions Page Title</label>
+              <input
+                type="text"
+                value={settings.page_terms_title || ""}
+                onChange={(e) => setSettings({ ...settings, page_terms_title: e.target.value })}
+              />
+              <label style={{ marginTop: "8px" }}>Terms &amp; Conditions Page Content</label>
+              <textarea
+                rows={3}
+                value={settings.page_terms_content || ""}
+                onChange={(e) => setSettings({ ...settings, page_terms_content: e.target.value })}
+              />
+            </div>
+
+            <div className="adm-form-group full-width">
+              <label>Return &amp; Refund Policy Page Title</label>
+              <input
+                type="text"
+                value={settings.page_return_title || ""}
+                onChange={(e) => setSettings({ ...settings, page_return_title: e.target.value })}
+              />
+              <label style={{ marginTop: "8px" }}>Return &amp; Refund Policy Content</label>
+              <textarea
+                rows={3}
+                value={settings.page_return_content || ""}
+                onChange={(e) => setSettings({ ...settings, page_return_content: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 7: SMS GATEWAY SETTINGS                                               */}
+      {/* ========================================================================= */}
+      {activeTab === "sms" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">SMS Gateway &amp; Automated Order Notifications</h3>
+              <p className="adm-card-subtitle">Connect SMS provider to dispatch text message alerts to clients</p>
+            </div>
+            <button
+              type="button"
+              className="adm-btn-primary"
+              onClick={() => handleSaveSettings("sms", "SMS Gateway settings saved!")}
+            >
+              Save SMS Settings
+            </button>
+          </div>
+
+          <div className="adm-form-grid">
+            <div className="adm-form-group">
+              <label>SMS Provider</label>
+              <select
+                value={settings.sms_provider || "twilio"}
+                onChange={(e) => setSettings({ ...settings, sms_provider: e.target.value })}
+              >
+                <option value="twilio">Twilio Cloud Communications</option>
+                <option value="custom">Generic HTTP SMS API</option>
+              </select>
+            </div>
+            <div className="adm-form-group">
+              <label>Twilio Account SID</label>
+              <input
+                type="text"
+                value={settings.sms_twilio_sid || ""}
+                onChange={(e) => setSettings({ ...settings, sms_twilio_sid: e.target.value })}
+                placeholder="ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Twilio Auth Token</label>
+              <input
+                type="password"
+                value={settings.sms_twilio_token || ""}
+                onChange={(e) => setSettings({ ...settings, sms_twilio_token: e.target.value })}
+              />
+            </div>
+            <div className="adm-form-group">
+              <label>Sender Phone Number / Sender ID</label>
+              <input
+                type="text"
+                value={settings.sms_twilio_from || ""}
+                onChange={(e) => setSettings({ ...settings, sms_twilio_from: e.target.value })}
+                placeholder="+16043168138"
+              />
+            </div>
+            <div className="adm-form-group full-width">
+              <label>Order Confirmation SMS Template</label>
+              <textarea
+                rows={2}
+                value={settings.sms_order_template || ""}
+                onChange={(e) => setSettings({ ...settings, sms_order_template: e.target.value })}
+              />
+              <small style={{ color: "#64748b", marginTop: "4px", display: "block" }}>
+                Variables available: {"{customer_name}"}, {"{order_id}"}, {"{total}"}
+              </small>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 8: NOTIFICATION SETTINGS (User explicitly requested NO sound tune)    */}
+      {/* ========================================================================= */}
+      {activeTab === "notification" && (
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <h3 className="adm-card-title">System &amp; Order Notifications</h3>
+              <p className="adm-card-subtitle">Configure administrative email and dashboard alerts (Sound tune disabled)</p>
+            </div>
+            <button
+              type="button"
+              className="adm-btn-primary"
+              onClick={() => handleSaveSettings("notifications", "Notification alerts updated successfully!")}
+            >
+              Save Notification Preferences
+            </button>
+          </div>
+
+          <div className="adm-notif-toggles-list" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="adm-notif-toggle-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
               <div>
-                <strong style={{ color: "#60a5fa", fontSize: "14px" }}>
-                  Dynamic XML Sitemap Active
-                </strong>
-                <p style={{ color: "var(--adm-text-muted)", fontSize: "12px", marginTop: "2px" }}>
-                  Automatically generates valid XML urlsets containing public product URLs for Google, Bing, and Yandex.
+                <strong>New Order Alert</strong>
+                <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "13px" }}>
+                  Notify administrator whenever a customer confirms an order on the storefront.
                 </p>
               </div>
-              <a
-                href={`${getApiBase()}/sitemap.xml`}
-                target="_blank"
-                rel="noreferrer"
-                className="adm-btn adm-btn-outline adm-btn-sm"
-              >
-                Open sitemap.xml &#8599;
-              </a>
+              <input
+                type="checkbox"
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                checked={settings.notif_order_placed === "1"}
+                onChange={(e) => setSettings({ ...settings, notif_order_placed: e.target.checked ? "1" : "0" })}
+              />
             </div>
 
-            <div style={{ marginTop: "20px" }}>
-              <button type="submit" className="adm-btn adm-btn-primary">
-                Save SEO &amp; Marketing Settings
+            <div className="adm-notif-toggle-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+              <div>
+                <strong>Low Stock Alert</strong>
+                <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "13px" }}>
+                  Alert administrator when a product inventory drops below 5 units.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                checked={settings.notif_low_stock === "1"}
+                onChange={(e) => setSettings({ ...settings, notif_low_stock: e.target.checked ? "1" : "0" })}
+              />
+            </div>
+
+            <div className="adm-notif-toggle-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+              <div>
+                <strong>Customer RFQ / Inquiry Alert</strong>
+                <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "13px" }}>
+                  Notify team when a client sends an RFQ quotation request or contact inquiry.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                checked={settings.notif_inquiry_received === "1"}
+                onChange={(e) => setSettings({ ...settings, notif_inquiry_received: e.target.checked ? "1" : "0" })}
+              />
+            </div>
+
+            <div className="adm-notif-toggle-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+              <div>
+                <strong>Customer Order Confirmation Email</strong>
+                <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "13px" }}>
+                  Automatically send purchase receipt and invoice to customer upon checkout.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                checked={settings.notif_customer_receipt === "1"}
+                onChange={(e) => setSettings({ ...settings, notif_customer_receipt: e.target.checked ? "1" : "0" })}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* PLUGIN CONFIGURATION MODAL (Interactive for purple button)                */}
+      {/* ========================================================================= */}
+      {activePluginModal && (
+        <div className="adm-modal-backdrop">
+          <div className="adm-plugin-config-modal">
+            <div className="adm-plugin-modal-header">
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "24px" }}>{activePluginModal.icon}</span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "18px", color: "#0f172a" }}>{activePluginModal.name} Configuration</h3>
+                  <p style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}>{activePluginModal.subtitle}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="adm-modal-close-btn"
+                onClick={() => setActivePluginModal(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="adm-plugin-modal-body">
+              {/* Status Switch */}
+              <div className="adm-modal-status-box">
+                <div>
+                  <strong>Plugin Activation Status</strong>
+                  <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                    Enable or disable this integration on the live storefront.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className={`adm-status-toggle-btn ${settings[activePluginModal.activeKey] === "1" ? "active" : ""}`}
+                  onClick={() => togglePluginStatus(activePluginModal.activeKey)}
+                >
+                  {settings[activePluginModal.activeKey] === "1" ? "Activated" : "DeActivated"}
+                </button>
+              </div>
+
+              {/* Credential Fields */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginTop: "16px" }}>
+                {activePluginModal.fields.map((f) => (
+                  <div key={f.key} className="adm-form-group">
+                    <label>{f.label}</label>
+                    {f.type === "textarea" ? (
+                      <textarea
+                        rows={3}
+                        value={settings[f.key] || ""}
+                        onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })}
+                        placeholder={f.placeholder}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={settings[f.key] || ""}
+                        onChange={(e) => setSettings({ ...settings, [f.key]: e.target.value })}
+                        placeholder={f.placeholder}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="adm-modal-note-box">
+                <span style={{ fontSize: "16px" }}>ℹ️</span>
+                <span>{activePluginModal.description}</span>
+              </div>
+            </div>
+
+            <div className="adm-plugin-modal-footer">
+              <button
+                type="button"
+                className="adm-btn-secondary"
+                onClick={() => setActivePluginModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="adm-btn-primary"
+                onClick={async () => {
+                  await handleSaveSettings("plugins", `${activePluginModal.name} settings saved successfully!`);
+                  setActivePluginModal(null);
+                }}
+              >
+                Save Configuration
               </button>
             </div>
           </div>
-        </form>
+        </div>
       )}
 
-      {/* Modal: Create/Edit Admin User */}
+      {/* User Create/Edit Modal */}
       {userModal && (
-        <div className="adm-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setUserModal(null)}>
-          <div className="adm-modal" style={{ maxWidth: "540px" }}>
+        <div className="adm-modal-backdrop">
+          <div className="adm-modal-content" style={{ maxWidth: "500px" }}>
             <div className="adm-modal-header">
-              <h2 className="adm-modal-title">
-                {userModal === "create" ? "Add New Administrator" : `Edit User (${currentUser?.email})`}
-              </h2>
-              <button type="button" className="adm-modal-close" onClick={() => setUserModal(null)}>
-                &times;
+              <h3>{userModal === "create" ? "Add New Administrator" : "Edit Admin Account"}</h3>
+              <button
+                type="button"
+                className="adm-modal-close"
+                onClick={() => setUserModal(null)}
+              >
+                ✕
               </button>
             </div>
-
             <form onSubmit={handleSaveUser}>
-              <div className="adm-form-group">
-                <label className="adm-label">Full Name *</label>
-                <input
-                  type="text"
-                  className="adm-input"
-                  value={userForm.name}
-                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <div className="adm-modal-body">
                 <div className="adm-form-group">
-                  <label className="adm-label">Username</label>
+                  <label>Full Name *</label>
                   <input
                     type="text"
-                    className="adm-input"
+                    required
+                    value={userForm.name}
+                    onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                  />
+                </div>
+                <div className="adm-form-group">
+                  <label>Username *</label>
+                  <input
+                    type="text"
+                    required
                     value={userForm.username}
                     onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                    placeholder="e.g. jsmith"
                   />
                 </div>
-
                 <div className="adm-form-group">
-                  <label className="adm-label">Email Address *</label>
+                  <label>Email Address *</label>
                   <input
                     type="email"
-                    className="adm-input"
+                    required
                     value={userForm.email}
                     onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                    required
                   />
                 </div>
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">
-                  {userModal === "create" ? "Password *" : "Reset Password (Leave blank to keep current)"}
-                </label>
-                <input
-                  type="password"
-                  className="adm-input"
-                  placeholder="Min 8 characters"
-                  value={userForm.password}
-                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                  required={userModal === "create"}
-                />
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Assigned Role</label>
-                <select
-                  className="adm-select"
-                  value={userForm.role}
-                  onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                >
-                  <option value="super_admin">Super Administrator (Full Unrestricted Access)</option>
-                  <option value="admin">Administrator</option>
-                  <option value="sales_manager">Sales Manager (Inquiries &amp; RFQ Leads)</option>
-                  <option value="editor">Editor (Product Catalog &amp; SEO)</option>
-                </select>
-              </div>
-
-              <div className="adm-form-group">
-                <label className="adm-label">Granular Permissions</label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                  {[
-                    { key: "products.manage", label: "Manage Products" },
-                    { key: "categories.manage", label: "Manage Categories" },
-                    { key: "inquiries.manage", label: "Manage Inquiries & RFQs" },
-                    { key: "settings.manage", label: "Manage System Settings" },
-                    { key: "users.manage", label: "Manage Multi-Users" },
-                    { key: "seo.manage", label: "Manage SEO & Marketing" },
-                  ].map((p) => (
-                    <label
-                      key={p.key}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        fontSize: "12.5px",
-                        color: "#e2e8f0",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={userForm.permissions.includes(p.key) || userForm.role === "super_admin"}
-                        disabled={userForm.role === "super_admin"}
-                        onChange={() => togglePermission(p.key)}
-                      />
-                      <span>{p.label}</span>
-                    </label>
-                  ))}
+                <div className="adm-form-group">
+                  <label>{userModal === "create" ? "Password *" : "New Password (Optional)"}</label>
+                  <input
+                    type="password"
+                    required={userModal === "create"}
+                    value={userForm.password}
+                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                    placeholder={userModal === "edit" ? "Leave blank to keep current" : ""}
+                  />
                 </div>
-              </div>
-
-              <div className="adm-form-group">
-                <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", color: "#fff" }}>
+                <div className="adm-form-group">
+                  <label>Role</label>
+                  <select
+                    value={userForm.role}
+                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                  >
+                    <option value="super_admin">Super Administrator</option>
+                    <option value="admin">Administrator</option>
+                    <option value="manager">Catalog &amp; Sales Manager</option>
+                  </select>
+                </div>
+                <div className="adm-form-group" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <input
                     type="checkbox"
+                    id="usr_active"
                     checked={userForm.is_active}
                     onChange={(e) => setUserForm({ ...userForm, is_active: e.target.checked })}
                   />
-                  <span>Active User Account (Able to login)</span>
-                </label>
+                  <label htmlFor="usr_active" style={{ margin: 0, cursor: "pointer" }}>
+                    Account Active &amp; Allowed to Log In
+                  </label>
+                </div>
               </div>
-
               <div className="adm-modal-footer">
                 <button
                   type="button"
-                  className="adm-btn adm-btn-secondary"
+                  className="adm-btn-secondary"
                   onClick={() => setUserModal(null)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="adm-btn adm-btn-primary">
-                  {userModal === "create" ? "Create Account" : "Update Account"}
+                <button type="submit" className="adm-btn-primary">
+                  {userModal === "create" ? "Create User" : "Update User"}
                 </button>
               </div>
             </form>

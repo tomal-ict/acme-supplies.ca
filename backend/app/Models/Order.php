@@ -12,9 +12,13 @@ class Order extends Model
         'customer_email',
         'customer_phone',
         'shipping_address',
+        'delivery_area',
+        'delivery_charge',
+        'subtotal',
         'total_amount',
         'delivery_status',
         'payment_status',
+        'payment_method',
         'is_incomplete',
         'items',
         'notes',
@@ -23,6 +27,8 @@ class Order extends Model
     protected function casts(): array
     {
         return [
+            'delivery_charge' => 'float',
+            'subtotal' => 'float',
             'total_amount' => 'float',
             'is_incomplete' => 'boolean',
             'items' => 'array',

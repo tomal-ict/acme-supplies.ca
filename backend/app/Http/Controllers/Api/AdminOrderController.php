@@ -85,6 +85,10 @@ class AdminOrderController extends Controller
         $validated = $request->validate([
             'delivery_status' => 'sometimes|in:pending,confirmed,picked,on_delivery,delivered,cancelled',
             'payment_status' => 'sometimes|in:unpaid,paid',
+            'payment_method' => 'nullable|string|max:100',
+            'delivery_area' => 'nullable|string|max:100',
+            'delivery_charge' => 'nullable|numeric|min:0',
+            'total_amount' => 'nullable|numeric',
             'notes' => 'nullable|string',
         ]);
 

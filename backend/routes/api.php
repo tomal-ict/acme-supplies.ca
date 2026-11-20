@@ -61,6 +61,7 @@ Route::middleware([SecurityHeaders::class, AdminAuthenticate::class, 'throttle:1
 
     // Products Management
     Route::get('/products', [AdminProductController::class, 'index']);
+    Route::post('/products/upload-image', [AdminProductController::class, 'uploadImage']);
     Route::post('/products', [AdminProductController::class, 'store']);
     Route::get('/products/{id}', [AdminProductController::class, 'show']);
     Route::put('/products/{id}', [AdminProductController::class, 'update']);

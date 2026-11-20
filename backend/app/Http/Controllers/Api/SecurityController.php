@@ -264,6 +264,4 @@ class SecurityController extends Controller
 </html>
 HTML;
     }
-HTML;
-    }
 }
