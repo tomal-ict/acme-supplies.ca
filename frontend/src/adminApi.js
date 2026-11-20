@@ -359,3 +359,25 @@ export async function adminDeleteBlockedIp(id) {
     method: "DELETE",
   });
 }
+
+// Database Synchronization & Codebase Backup
+export async function adminGetDbSyncStatus() {
+  return adminRequest("/admin/database/status");
+}
+
+export async function adminBackupDatabase() {
+  return adminRequest("/admin/database/backup", {
+    method: "POST",
+  });
+}
+
+export async function adminRestoreDatabase() {
+  return adminRequest("/admin/database/restore", {
+    method: "POST",
+  });
+}
+
+export function getDbBackupDownloadUrl() {
+  return `${getApiBase()}/admin/database/download`;
+}
+

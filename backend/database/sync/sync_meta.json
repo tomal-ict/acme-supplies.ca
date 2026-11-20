@@ -1,0 +1,24 @@
+{
+    "exported_at": "2026-11-20 18:24:41",
+    "file_size": "70.21 KB",
+    "file_size_bytes": 71892,
+    "total_tables": 15,
+    "total_records": 241,
+    "tables": {
+        "blocked_ips": 1,
+        "cache": 4,
+        "cache_locks": 0,
+        "categories": 32,
+        "failed_jobs": 0,
+        "inquiries": 0,
+        "job_batches": 0,
+        "jobs": 0,
+        "migrations": 14,
+        "orders": 13,
+        "password_reset_tokens": 0,
+        "products": 78,
+        "sessions": 2,
+        "settings": 96,
+        "users": 1
+    }
+}

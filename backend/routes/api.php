@@ -113,6 +113,12 @@ Route::middleware([SecurityHeaders::class, AdminAuthenticate::class, 'throttle:1
     Route::post('/security/unblock-ip', [SecurityController::class, 'adminUnblock']);
     Route::post('/security/block-ip', [SecurityController::class, 'adminBlock']);
     Route::delete('/security/blocked-ips/{id}', [SecurityController::class, 'adminDestroy']);
+
+    // Database Synchronization & Codebase Backup
+    Route::get('/database/status', [\App\Http\Controllers\Api\AdminDatabaseSyncController::class, 'status']);
+    Route::post('/database/backup', [\App\Http\Controllers\Api\AdminDatabaseSyncController::class, 'backup']);
+    Route::post('/database/restore', [\App\Http\Controllers\Api\AdminDatabaseSyncController::class, 'restore']);
+    Route::get('/database/download', [\App\Http\Controllers\Api\AdminDatabaseSyncController::class, 'download']);
 });
 
 Route::fallback([SecurityController::class, 'serverFallback']);

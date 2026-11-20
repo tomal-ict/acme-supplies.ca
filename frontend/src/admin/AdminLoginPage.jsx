@@ -32,7 +32,13 @@ export default function AdminLoginPage({ onLoginSuccess }) {
       <div className="adm-login-card">
         <div className="adm-login-header">
           <div className="adm-login-logo-badge">
-            <img src="./images/logo.png" alt="AMIDA OFFICE SUPPLIES LIMITED" className="adm-login-logo" />
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "28px" }}>💠</span>
+              <div style={{ display: "flex", flexDirection: "column", textAlign: "left", lineHeight: 1.15 }}>
+                <span style={{ fontSize: "18px", fontWeight: "800", color: "#0b132b", letterSpacing: "-0.3px" }}>AMIDA</span>
+                <span style={{ fontSize: "9px", fontWeight: "700", color: "#5b45ff", letterSpacing: "0.8px" }}>OFFICE SUPPLIES</span>
+              </div>
+            </div>
           </div>
           <h1 className="adm-login-title">Control Center Login</h1>
           <p className="adm-login-subtitle">
